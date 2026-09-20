@@ -118,7 +118,7 @@ export function StackSchematic({ className }: StackSchematicProps) {
           data-band={n.band}
           tabIndex={0}
           role="img"
-          aria-label={`${n.name}. ${n.rationale}`}
+          aria-label={n.rationale}
           style={{ cursor: "default" }}
         >
           <rect

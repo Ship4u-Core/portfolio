@@ -1,6 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { GeistSans } from "geist/font/sans";
-import { GeistMono } from "geist/font/mono";
+import localFont from "next/font/local";
 import { Instrument_Serif } from "next/font/google";
 import "./globals.css";
 import { isPlaceholder, site } from "@/content/site";
@@ -11,6 +10,27 @@ import { ScrollProvider } from "@/components/chrome/ScrollProvider";
 import { ProgressRail } from "@/components/chrome/ProgressRail";
 import { ManifestRail } from "@/components/chrome/ManifestRail";
 import { Cursor } from "@/components/chrome/Cursor";
+
+/*
+ * Geist Sans and Geist Mono come from the `geist` package, subset to latin
+ * (spec 9.2) by scripts/subset-fonts.mjs so each preloaded face is ~33 KB
+ * rather than ~70 KB. The variable weight axis is preserved.
+ */
+const GeistSans = localFont({
+  src: "./fonts/Geist-Variable-latin.woff2",
+  variable: "--font-geist-sans",
+  weight: "100 900",
+  display: "swap",
+  preload: true,
+});
+
+const GeistMono = localFont({
+  src: "./fonts/GeistMono-Variable-latin.woff2",
+  variable: "--font-geist-mono",
+  weight: "100 900",
+  display: "swap",
+  preload: true,
+});
 
 const instrumentSerif = Instrument_Serif({
   weight: "400",
@@ -53,8 +73,16 @@ export const viewport: Viewport = {
  * apply pre-animation states, and mirrors the reduced-motion preference onto
  * <html> so both CSS and GSAP read the same flag. Without this script, the
  * document renders in its final, complete state.
+ *
+ * It also arms a hydration deadline. The hero load choreography (spec 6.1)
+ * hides the headline, paragraph and actions until GSAP reveals them; if
+ * hydration has not happened within 900 ms the document is marked `late`,
+ * the CSS pre-animation states lift, and the hero renders complete. The
+ * choreography is then skipped rather than played over already-visible copy.
+ * This keeps the spec's "no wait longer than 1.2 s" promise on slow devices
+ * and keeps LCP independent of JavaScript delivery.
  */
-const gateScript = `(function(d){var c=d.documentElement.classList;c.add("js");if(window.matchMedia&&window.matchMedia("(prefers-reduced-motion: reduce)").matches){c.add("reduce")}})(document);`;
+const gateScript = `(function(w,d){var c=d.documentElement.classList;c.add("js");if(w.matchMedia&&w.matchMedia("(prefers-reduced-motion: reduce)").matches){c.add("reduce")}var t=w.setTimeout(function(){c.add("late")},900);w.__ship4uHydrated=function(){w.clearTimeout(t)}})(window,document);`;
 
 /**
  * Organization + ProfessionalService structured data (spec 10.1). Placeholder

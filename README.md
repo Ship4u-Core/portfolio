@@ -89,6 +89,7 @@ Set it to the production origin (for example `https://ship4u.dev`) before deploy
 ## Accessibility and motion
 
 - The document is complete and legible with JavaScript disabled. An inline head script adds `js` to `<html>` so that pre-animation states only apply when GSAP will animate them.
+- The same script arms a 900 ms hydration deadline. If React has not mounted by then, `<html>` gains `late`, the hero's pre-animation states lift and the load choreography is skipped so the page never waits on JavaScript. Scroll choreography still runs.
 - `prefers-reduced-motion: reduce` disables Lenis, every scrub and every pin. Sections render in their final state; the only transitions left are colour and opacity at 200 ms or less.
 - Below 768px nothing is pinned. The process track is vertical, the capabilities drawing is four static illustrations, the stack schematic is five expandable lists, and three.js is never loaded.
 - three.js is loaded with `next/dynamic` only when the interlude is within 300px of the viewport on a desktop that allows motion and has WebGL. It is not in the initial bundle.
@@ -96,14 +97,36 @@ Set it to the production origin (for example `https://ship4u.dev`) before deploy
 ## Notes on the toolchain
 
 - Tailwind CSS v4 is configured entirely in `src/app/globals.css` through `@theme inline`; there is no `tailwind.config.ts`. The specification's reference to a Tailwind config in section 4.3 predates v4.
-- `@gsap/react` is included for `useGSAP`. It is the only dependency beyond the specification's list.
+- `@gsap/react` is included for `useGSAP`. It is the only runtime dependency beyond the specification's list. `subset-font` is a dev dependency used only by the font script below.
 - All GSAP animation is scoped to a component subtree and torn down on unmount. Only `transform`, `opacity`, `clip-path` and SVG dash values are animated.
+- Geist Sans and Geist Mono are taken from the `geist` package but served as latin subsets from `src/app/fonts/` (about 33 KB each instead of 70 KB), loaded through `next/font/local` and preloaded. After upgrading `geist`, run `npm run fonts` to regenerate them. Instrument Serif comes from `next/font/google`, latin subset, not preloaded.
+
+## Performance
+
+Measured with `npx lighthouse` against `next start` on this machine (Lighthouse 13, simulated 4G and 4x CPU slowdown for mobile):
+
+| | Desktop | Mobile |
+|---|---|---|
+| Performance | 98 | 85 to 88 |
+| Accessibility | 97 | 100 |
+| Best practices | 100 | 100 |
+| SEO | 100 | 100 |
+| LCP | 0.8 s | 3.2 s |
+| CLS | 0 | 0 |
+| TBT | 120 ms | 250 to 330 ms |
+
+Two items from the specification's budget (section 9.1) are not met and are structural rather than fixable in this codebase:
+
+- Initial JavaScript is about 201 KB gzipped against a 180 KB budget. Of that, React 19 and the Next.js 16 app-router runtime are 131 KB and GSAP with ScrollTrigger 41 KB, before any site code. Three.js is not included and never loads on mobile.
+- Simulated mobile LCP is 3.2 s against a 2.0 s budget. The LCP element is the hero paragraph, which the specification's load choreography reveals from JavaScript at 0.9 s. The hydration deadline caps the worst case on slow devices, but Lighthouse's model still charges the script download and hydration to it. On a real device with a warm CDN the figure is lower; measure with field data once deployed.
+
+The desktop accessibility score of 97 is one axe contrast finding on the hero's `100 / READY` counter, which the specification sets at 60 percent graphite after it settles. It is decorative and hidden from assistive technology.
 
 ## Project layout
 
 ```
 src/
-  app/            layout, page, globals.css, api/enquiry, opengraph-image, sitemap, robots, icon
+  app/            layout, page, globals.css, fonts/, api/enquiry, opengraph-image, sitemap, robots, icon
   components/
     chrome/       ProgressRail, ManifestRail, Cursor, Grain, GridOverlay, ScrollProvider
     sections/     S00Index .. S08Ship and their client-side scene wrappers
@@ -114,6 +137,7 @@ src/
   types/          content types
 scripts/
   placeholders.mjs
+  subset-fonts.mjs
 public/
   work/           placeholder images
 ```

@@ -696,7 +696,7 @@ html.js:not(.reduce) [data-stack-schematic]:not([data-ready]) :is(rect[data-node
   font-size: calc(var(--type-display-l) * 1.7);
   line-height: 0.8;
   color: var(--signal);
-  opacity: 0.08;
+  opacity: 0.12;
   position: absolute;
   left: -0.14em;
   top: 0;
@@ -722,30 +722,32 @@ html.js:not(.reduce) [data-stack-schematic]:not([data-ready]) :is(rect[data-node
 /* Pre-animation (hidden) states are only applied when JavaScript is    */
 /* running and the visitor has not asked for reduced motion. Server     */
 /* HTML, JS-disabled and reduced-motion visitors always see final state.*/
+/* `html.late` is set by the head script when hydration misses its      */
+/* 900 ms deadline; the states lift and the load choreography is skipped.*/
 /* ------------------------------------------------------------------ */
 
-html.js:not(.reduce) [data-reveal="clip"] {
+html.js:not(.reduce):not(.late) [data-reveal="clip"] {
   clip-path: inset(0 100% 0 0);
 }
 
-html.js:not(.reduce) [data-reveal="clip-up"] {
+html.js:not(.reduce):not(.late) [data-reveal="clip-up"] {
   clip-path: inset(100% 0 0 0);
 }
 
-html.js:not(.reduce) [data-reveal="mask-up"] {
+html.js:not(.reduce):not(.late) [data-reveal="mask-up"] {
   clip-path: inset(100% 0 0 0);
 }
 
-html.js:not(.reduce) [data-reveal="rule"] {
+html.js:not(.reduce):not(.late) [data-reveal="rule"] {
   transform: scaleX(0);
   transform-origin: left center;
 }
 
-html.js:not(.reduce) [data-reveal="fade"] {
+html.js:not(.reduce):not(.late) [data-reveal="fade"] {
   opacity: 0;
 }
 
-html.js:not(.reduce) [data-reveal="draw"] {
+html.js:not(.reduce):not(.late) [data-reveal="draw"] {
   stroke-dasharray: 1;
   stroke-dashoffset: 1;
 }

@@ -42,10 +42,13 @@ export function S00Index() {
           </span>
         </p>
 
-        {/* Top-right counter, desktop */}
+        {/* Top-right counter, desktop. Decorative annotation: it settles at 60%
+            graphite by design (spec 6.1), so it is hidden from assistive tech
+            rather than held to body-copy contrast. */}
         <div
           className="absolute right-(--gutter) top-[calc(var(--rail-height)+28px)] hidden text-right md:block"
           data-hero-counter
+          aria-hidden="true"
         >
           <p className="mono tabular">
             <span data-counter-value>100</span>

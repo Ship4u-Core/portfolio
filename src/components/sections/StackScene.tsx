@@ -3,7 +3,6 @@
 import { useLayoutEffect, useRef, type ReactNode } from "react";
 import { gsap } from "@/lib/gsap";
 import { prepareDraw } from "@/lib/motion";
-import { stack } from "@/content/stack";
 
 /**
  * 05 STACK schematic behaviour, desktop only.
@@ -29,14 +28,14 @@ export function StackScene({ children }: { children: ReactNode }) {
     const tooltip = section.querySelector<HTMLElement>("[data-stack-tooltip]");
     if (!svg || !wrap || !tooltip) return;
 
-    const rationale = new Map<string, string>();
-    stack.forEach((band) =>
-      band.nodes.forEach((n) =>
-        rationale.set(n.id, n.rationale),
-      ),
-    );
-
     const nodes = gsap.utils.toArray<SVGGElement>("g[data-stack-node]", svg);
+
+    // Rationale copy and band order are read from the server-rendered SVG so
+    // the stack content module stays out of the client bundle.
+    const rationale = new Map<string, string>();
+    nodes.forEach((n) =>
+      rationale.set(n.dataset.stackNode!, n.getAttribute("aria-label") ?? ""),
+    );
     const edges = gsap.utils.toArray<SVGPathElement>("path[data-edge]", svg);
 
     /* ---------------- Hover / focus ---------------- */
@@ -106,7 +105,9 @@ export function StackScene({ children }: { children: ReactNode }) {
     mm.add(
       "(min-width: 768px) and (prefers-reduced-motion: no-preference)",
       () => {
-        const bandIds = stack.map((b) => b.id);
+        const bandIds = gsap.utils
+          .toArray<SVGTextElement>("text[data-band-label]", svg)
+          .map((t) => t.dataset.bandLabel!);
         const nodeBand = new Map(
           nodes.map((n) => [n.dataset.stackNode!, n.dataset.band!]),
         );
