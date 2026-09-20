@@ -311,6 +311,7 @@
 .doc-section {
   position: relative;
   border-top: 1px solid var(--rule);
+  scroll-margin-top: var(--rail-height);
 }
 
 .doc-section[data-tone="ink"] {
@@ -558,6 +559,130 @@ html.reduce *::after {
 html.custom-cursor,
 html.custom-cursor * {
   cursor: none !important;
+}
+
+html.custom-cursor input,
+html.custom-cursor textarea,
+html.custom-cursor select {
+  cursor: auto !important;
+}
+
+.cursor-root {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 100;
+  width: 0;
+  height: 0;
+  pointer-events: none;
+  transition: opacity 0.15s var(--ease-out);
+}
+
+.cursor-cross {
+  position: absolute;
+  left: -8px;
+  top: -8px;
+  width: 16px;
+  height: 16px;
+  transition:
+    opacity 0.15s var(--ease-out),
+    transform 0.2s var(--ease-out);
+}
+
+.cursor-cross::before,
+.cursor-cross::after {
+  content: "";
+  position: absolute;
+  background: var(--ink);
+}
+
+.cursor-cross::before {
+  left: 0;
+  right: 0;
+  top: 7.5px;
+  height: 1px;
+}
+
+.cursor-cross::after {
+  top: 0;
+  bottom: 0;
+  left: 7.5px;
+  width: 1px;
+}
+
+.cursor-ring {
+  position: absolute;
+  left: -28px;
+  top: -28px;
+  width: 56px;
+  height: 56px;
+  border: 1px solid var(--ink);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transform: scale(0.25);
+  opacity: 0;
+  transition:
+    transform 0.2s var(--ease-out),
+    opacity 0.15s var(--ease-out);
+}
+
+.cursor-label {
+  color: var(--ink);
+  font-size: 9px;
+  letter-spacing: 0.12em;
+  opacity: 0;
+  transition: opacity 0.15s var(--ease-out);
+}
+
+.cursor-root[data-state="label"] .cursor-cross {
+  opacity: 0;
+  transform: scale(0.5);
+}
+
+.cursor-root[data-state="label"] .cursor-ring {
+  transform: scale(1);
+  opacity: 1;
+}
+
+.cursor-root[data-state="label"] .cursor-label {
+  opacity: 1;
+  transition-delay: 0.08s;
+}
+
+.cursor-root[data-state="hidden"] .cursor-cross,
+.cursor-root[data-state="hidden"] .cursor-ring {
+  opacity: 0;
+}
+
+/* Lenis */
+html.lenis,
+html.lenis body {
+  height: auto;
+}
+
+.lenis:not(.lenis-autoToggle).lenis-stopped {
+  overflow: clip;
+}
+
+.lenis.lenis-smooth [data-lenis-prevent] {
+  overscroll-behavior: contain;
+}
+
+.lenis.lenis-smooth iframe {
+  pointer-events: none;
+}
+
+/* The wordmark's 4 flips to the accent at the end of the hero load. */
+html.js:not(.reduce) [data-wordmark-four] {
+  color: inherit;
+}
+
+/* The manifest rail is JavaScript-driven; hide its dead controls without it. */
+html:not(.js) [data-manifest],
+html:not(.js) [data-manifest-opener] {
+  display: none;
 }
 
 /* ------------------------------------------------------------------ */

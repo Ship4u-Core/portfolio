@@ -1,5 +1,8 @@
+"use client";
+
 import clsx from "clsx";
 import type { SectionCode, SectionStatus } from "@/types/content";
+import { statusFor, useSectionState } from "@/lib/sectionStore";
 
 interface StatusChipProps {
   code: SectionCode;
@@ -9,8 +12,9 @@ interface StatusChipProps {
 }
 
 /**
- * Section status in mono brackets. Server renders the fallback; the section
- * store (Phase 2) updates `data-status` and the text as the visitor scrolls.
+ * Section status in mono brackets, driven by the section store: READY until
+ * the section is reached, BUILDING while it owns the viewport, COMPLETE once
+ * passed. Section 08 reads SHIPPED. Colour changes only; no motion.
  */
 export function StatusChip({
   code,
@@ -18,18 +22,23 @@ export function StatusChip({
   tone = "paper",
   className,
 }: StatusChipProps) {
+  const state = useSectionState();
+  const status = statusFor(code, state, fallback);
+  const active = status === "BUILDING" || status === "SHIPPED";
+
   return (
     <span
       className={clsx(
-        "mono whitespace-nowrap",
+        "mono whitespace-nowrap transition-colors duration-200",
         tone === "ink" && "text-paper-on-ink",
+        active && (tone === "ink" ? "text-signal" : "text-signal-deep"),
         className,
       )}
       data-status-for={code}
-      data-status={fallback}
+      data-status={status}
     >
       <span aria-hidden="true">[ </span>
-      <span data-status-text>{fallback}</span>
+      <span data-status-text>{status}</span>
       <span aria-hidden="true"> ]</span>
     </span>
   );

@@ -6,6 +6,10 @@ import "./globals.css";
 import { site } from "@/content/site";
 import { Grain } from "@/components/chrome/Grain";
 import { GridOverlay } from "@/components/chrome/GridOverlay";
+import { ScrollProvider } from "@/components/chrome/ScrollProvider";
+import { ProgressRail } from "@/components/chrome/ProgressRail";
+import { ManifestRail } from "@/components/chrome/ManifestRail";
+import { Cursor } from "@/components/chrome/Cursor";
 
 const instrumentSerif = Instrument_Serif({
   weight: "400",
@@ -65,7 +69,12 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <a href="#main" className="skip-link mono text-paper">
           Skip to content
         </a>
-        {children}
+        <ScrollProvider>
+          <ProgressRail />
+          {children}
+          <ManifestRail />
+          <Cursor />
+        </ScrollProvider>
         <Grain />
         <GridOverlay />
       </body>
