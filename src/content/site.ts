@@ -3,19 +3,18 @@ import type { SiteContent } from "@/types/content";
 const url = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
 
 export const site: SiteContent = {
-  __placeholder: true,
   name: "SHIP4U",
-  legalName: "[[LEGAL_NAME]]",
-  location: "[[LOCATION]]",
-  email: "[[EMAIL]]",
+  legalName: "Ship4u",
+  location: "INDIA",
+  email: "contact@ship4u.in",
   url,
   positioning: "From idea to shipped product.",
   title: "Ship4u — Web, Mobile and AI Product Development",
   description:
     "Ship4u is a two-person development studio building production-ready web, mobile and AI products. Architecture through deployment, fixed quotes, no handoffs.",
   profiles: [
-    { label: "GITHUB", href: "[[GITHUB_URL]]" },
-    { label: "LINKEDIN", href: "[[LINKEDIN_URL]]" },
+    { label: "GITHUB", href: "https://github.com/laksh-krishna-sharma" },
+    { label: "LINKEDIN", href: "https://www.linkedin.com/in/laskh-krishna-sharma/" },
   ],
   year: 2026,
   colophon:

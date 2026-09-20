@@ -1,40 +1,39 @@
 import type { Founder } from "@/types/content";
 
 /**
- * PLACEHOLDER FOUNDER DATA. Replace every token, then remove `__placeholder`.
  * The `line` values are Instrument Serif uses two and three of four; keep each
  * to one sentence in the first person.
  */
 
 export const studioIntro =
-  "Ship4u is two engineers. That is the entire company, deliberately. You talk to the people writing the code, decisions take hours rather than weeks, and nothing is handed to a junior you were never introduced to. It also means we take on a limited number of projects at a time, and we will tell you honestly if yours is not one we should take.";
+  "At Ship4u, you work directly with seasoned engineers who design and ship your product end-to-end. You get clear communication, decisions in hours instead of weeks, and nothing is handed off without your knowledge. We take on a limited number of projects to ensure focus, and if a project is not the right fit, we will tell you honestly.";
 
 export const founders: Founder[] = [
   {
-    __placeholder: true,
     id: "founder-a",
-    initial: "A",
-    name: "[[FOUNDER_A_NAME]]",
-    role: "[[FOUNDER_A_ROLE]]",
-    line: "[[FOUNDER_A_LINE]]",
-    owns: "[[FOUNDER_A_OWNS]]",
-    background: "[[FOUNDER_A_BACKGROUND]]",
-    writes: "[[FOUNDER_A_WRITES]]",
-    email: "[[FOUNDER_A_EMAIL]]",
-    link: { label: "[[FOUNDER_A_LINK_LABEL]]", href: "[[FOUNDER_A_LINK]]" },
+    initial: "L",
+    name: "Laksh Krishna Sharma",
+    role: "AI ENGINEER · DEVOPS",
+    line: "I design the AI pipelines and the cloud they run on, and I keep them cheap enough to stay in production.",
+    owns: "Architecture, LLM pipelines, APIs, cloud infrastructure",
+    background:
+      "AI Engineer at TrustAstrology.ai. Previously AI at Ant Creatives and full-stack at Venumonk. CS at MAIT, Data Science at IIT Madras.",
+    writes: "Python, TypeScript, FastAPI, LangGraph, PostgreSQL, Redis, AWS, GCP, Docker",
+    email: "laksh@ship4u.in",
+    link: { label: "PORTFOLIO", href: "https://laksh-krishna-sharma.vercel.app/" },
   },
   {
-    __placeholder: true,
     id: "founder-b",
-    initial: "B",
-    name: "[[FOUNDER_B_NAME]]",
-    role: "[[FOUNDER_B_ROLE]]",
-    line: "[[FOUNDER_B_LINE]]",
-    owns: "[[FOUNDER_B_OWNS]]",
-    background: "[[FOUNDER_B_BACKGROUND]]",
-    writes: "[[FOUNDER_B_WRITES]]",
-    email: "[[FOUNDER_B_EMAIL]]",
-    link: { label: "[[FOUNDER_B_LINK_LABEL]]", href: "[[FOUNDER_B_LINK]]" },
+    initial: "R",
+    name: "Rupesh Singh Karki",
+    role: "AI ENGINEER · FULL STACK",
+    line: "I build the product end to end — agents, backends, and the interfaces people actually use.",
+    owns: "Multi-agent systems, full-stack product, data workflows",
+    background:
+      "AI Engineer at TrustAstrology.ai. Previously full-stack at SociolinQ. CS at MAIT.",
+    writes: "Python, TypeScript, FastAPI, React, LangGraph, PostgreSQL, MongoDB, Redis, AWS",
+    email: "rupesh@ship4u.in",
+    link: { label: "PORTFOLIO", href: "https://rupesh-singh-karki.vercel.app/" },
   },
 ];
 
@@ -45,7 +44,6 @@ export const founderLabels = {
 };
 
 export const availability = {
-  __placeholder: true,
   label: "CURRENT AVAILABILITY —",
-  value: "[[AVAILABILITY]]",
+  value: "AVAILABLE NOW",
 };

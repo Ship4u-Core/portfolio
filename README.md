@@ -64,27 +64,20 @@ Some notes that go beyond string tokens:
 
 ## Wiring the form transport
 
-The enquiry form posts to `POST /api/enquiry` (`src/app/api/enquiry/route.ts`). The route validates server-side, returns `200 { ok: true }` and logs the payload to the server console. Nothing is delivered anywhere yet, and the route logs a warning on every submission saying so.
+The enquiry form posts to `POST /api/enquiry` (`src/app/api/enquiry/route.ts`). The route validates server-side and emails the payload with [Resend](https://resend.com). Copy `.env.example` to `.env` and replace `re_xxxxxxxxx` with your real API key from [resend.com/api-keys](https://resend.com/api-keys). The route accepts both JSON (the form with JavaScript) and form-encoded bodies (the same form with JavaScript disabled); keep both paths working.
 
-The place to wire a transport is marked in the route:
-
-```ts
-// TODO(ship4u): wire a transport. Options, in order of effort:
-//   1. Resend  — `await resend.emails.send({...})`, add RESEND_API_KEY
-//   2. Formspree/Web3Forms — POST-forward, no backend key needed
-//   3. Supabase/Postgres table — if you want a CRM later
-// Until one is wired, enquiries are logged only and WILL BE LOST.
-```
-
-Replace the body of `deliver()` with the transport call and remove the warning once submissions are confirmed to arrive. The route accepts both JSON (the form with JavaScript) and form-encoded bodies (the same form with JavaScript disabled); keep both paths working.
+`onboarding@resend.dev` is Resend's test sender. It can only deliver to the email on the Resend account. For production, verify `ship4u.in` at [resend.com/domains](https://resend.com/domains) and set `RESEND_FROM` to an address on that domain.
 
 ## Environment variables
 
 | Variable | Purpose | Default |
 |---|---|---|
 | `NEXT_PUBLIC_SITE_URL` | Canonical URL. Drives the sitemap, robots, Open Graph URL and JSON-LD. | `http://localhost:3000` |
+| `RESEND_API_KEY` | Resend API key used by `POST /api/enquiry`. Required for the form to deliver. | — |
+| `ENQUIRY_TO` | Inbox that receives form submissions. | `contact@ship4u.in` (`site.email`) |
+| `RESEND_FROM` | From address. Must be a verified Resend domain in production. | `Ship4u <onboarding@resend.dev>` |
 
-Set it to the production origin (for example `https://ship4u.dev`) before deploying. Any transport keys (for example `RESEND_API_KEY`) are added when the form transport is wired.
+Set `NEXT_PUBLIC_SITE_URL` to the production origin (for example `https://ship4u.dev`) before deploying. Set `RESEND_API_KEY` (and the from/to addresses) in the host's environment as well.
 
 ## Accessibility and motion
 
@@ -133,7 +126,7 @@ src/
     scenes/       BuildSystemSVG, StackSchematic, ProcessGlyphs, WireStatic, WireObject, WireMount
     ui/           SectionHeader, MonoLabel, Button, Placeholder, StatusChip, MonoRewrite, DigitRoll, RuleRevealText, Icons
   content/        all copy, typed
-  lib/            gsap.ts, motion.ts, sectionStore.ts, useReducedMotion.ts, enquiry.ts
+  lib/            gsap.ts, motion.ts, sectionStore.ts, useReducedMotion.ts, enquiry.ts, mail.ts
   types/          content types
 scripts/
   placeholders.mjs

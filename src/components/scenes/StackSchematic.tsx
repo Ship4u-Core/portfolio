@@ -35,20 +35,22 @@ export const placedNodes: Placed[] = stack.flatMap((band, row) =>
 const routes: Record<string, string> = {
   "react-nextjs": "M300 60H270",
   "typescript-react": "M480 60H450",
-  "tailwind-typescript": "M660 60H630",
+  "python-typescript": "M660 60H630",
   "nextjs-nodejs": "M205 80V160",
-  "typescript-trpc": "M555 80V160",
+  "typescript-graphql": "M555 80V160",
+  "python-golang": "M735 80V160",
   "nodejs-postgres": "M205 200V280",
   "fastapi-openai": "M395 200V250H465V350H395V400",
   "redis-postgres": "M300 300H270",
-  "s3-redis": "M480 300H450",
-  "openai-claude": "M300 420H270",
+  "mongodb-redis": "M480 300H450",
+  "openai-gemini": "M300 420H270",
   "pgvector-openai": "M480 420H450",
   "langgraph-pgvector": "M660 420H630",
-  "aws-vercel": "M300 540H270",
+  "aws-gcp": "M300 540H270",
   "docker-aws": "M480 540H450",
-  "gha-docker": "M660 540H630",
-  "vercel-nextjs": "M120 540H100V60H120",
+  "azure-docker": "M660 540H630",
+  "jenkins-azure": "M840 540H810",
+  "gcp-nextjs": "M120 540H100V60H120",
   "aws-postgres": "M315 520V470H285V330H255V320",
 };
 
@@ -72,7 +74,7 @@ interface StackSchematicProps {
 export function StackSchematic({ className }: StackSchematicProps) {
   return (
     <svg
-      viewBox="88 8 736 570"
+      viewBox="88 8 920 570"
       className={className}
       role="img"
       data-stack-schematic

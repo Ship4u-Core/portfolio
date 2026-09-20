@@ -147,11 +147,11 @@ ${flagRows.join("\n")}
 
 ## Not tokens, but provisional
 
-- \`public/work/placeholder-01.svg\`, \`placeholder-02.svg\`, \`placeholder-03.svg\`: generated placeholder images. Replace with real 1600 x 1000 assets and update \`image\` in \`src/content/work.ts\`.
+- \`public/work/placeholder-01.webp\`, \`placeholder-02.webp\`, \`placeholder-03.webp\`: generated placeholder images. Replace with real 1600 x 1000 assets and update \`image\` in \`src/content/work.ts\`.
 - Hero case study metric \`display\` values (\`—%\`, \`0.0s\`, \`[metric]\`) are deliberately unreal. Replace only with measured figures.
 - \`href: null\` on supporting projects keeps the rows unlinked. Set a URL only when a case study page exists.
 - \`NEXT_PUBLIC_SITE_URL\` (environment variable) drives the canonical URL, sitemap, robots and JSON-LD. Defaults to \`http://localhost:3000\`.
-- \`src/app/api/enquiry/route.ts\` has no transport wired. Enquiries are logged to the server console only and WILL BE LOST until one is added.
+- \`RESEND_API_KEY\` must be set for the enquiry form to deliver. Copy \`.env.example\` and replace \`re_xxxxxxxxx\` with a real key. Verify \`ship4u.in\` on Resend before using a production from-address.
 `;
 }
 

@@ -5,8 +5,7 @@ import { isPlaceholder } from "@/content/site";
 import type { Project } from "@/types/content";
 import { SectionHeader } from "@/components/ui/SectionHeader";
 import { Placeholder } from "@/components/ui/Placeholder";
-import { DigitRoll } from "@/components/ui/DigitRoll";
-import { RegistrationCross } from "@/components/ui/Icons";
+import { ArrowRight, RegistrationCross } from "@/components/ui/Icons";
 import { WorkScene } from "./WorkScene";
 
 function P({ children, className }: { children: string; className?: string }) {
@@ -18,8 +17,8 @@ function P({ children, className }: { children: string; className?: string }) {
 }
 
 /**
- * 02 SELECTED WORK. One hero case study with the zoom treatment, then two
- * supporting projects as editorial rows. All content provisional.
+ * 02 SELECTED WORK. One featured case study in static document layout, then
+ * two supporting projects as editorial rows.
  */
 export function S02Work() {
   return (
@@ -51,120 +50,109 @@ export function S02Work() {
 }
 
 function HeroCaseStudy({ project }: { project: Project }) {
-  return (
-    <article aria-labelledby="work-hero-name" data-work-hero>
-      <div data-work-stage>
-        {/* Figure with registration frame */}
-        <figure className="relative" data-work-figure>
-          <div className="relative" data-work-frame>
-            <div
-              aria-hidden="true"
-              className="pointer-events-none absolute inset-0 border border-rule"
-              data-work-frame-rule
-            />
-            <RegistrationCross
-              className="absolute -left-1.5 -top-1.5 text-ink"
-              data-work-cross
-            />
-            <RegistrationCross
-              className="absolute -right-1.5 -top-1.5 text-ink"
-              data-work-cross
-            />
-            <RegistrationCross
-              className="absolute -bottom-1.5 -left-1.5 text-ink"
-              data-work-cross
-            />
-            <RegistrationCross
-              className="absolute -bottom-1.5 -right-1.5 text-ink"
-              data-work-cross
-            />
-            <Image
-              src={project.image.src}
-              width={project.image.width}
-              height={project.image.height}
-              alt={project.image.alt}
-              priority
-              unoptimized={project.image.src.endsWith(".svg")}
-              sizes="(min-width: 1440px) 1296px, 100vw"
-              className="h-auto w-full"
-              data-work-image
-            />
-            {/* Browser chrome frame drawn over the image at full-bleed */}
-            <div
-              aria-hidden="true"
-              className="pointer-events-none absolute inset-0 opacity-0"
-              data-work-chrome
-            >
-              <div className="absolute left-0 right-0 top-0 h-8 border-b border-ink" />
-              <div className="absolute left-3 top-2.5 h-3 w-3 border border-ink" />
-              <div className="absolute left-8 top-2.5 h-3 w-3 border border-ink" />
-              <div className="absolute left-13 top-2.5 h-3 w-3 border border-ink" />
-              <div className="absolute left-20 right-3 top-2.5 h-3 border border-ink" />
-            </div>
-          </div>
+  const openHref =
+    project.href && !isPlaceholder(project.href) ? project.href : null;
 
-          {/* Corner annotations */}
-          <figcaption
-            className="mono mt-3 flex flex-wrap justify-between gap-x-6 gap-y-2"
-            data-work-annotations
-          >
+  return (
+    <article aria-labelledby="work-hero-name">
+      <header className="flex flex-col gap-8 md:flex-row md:items-start md:justify-between md:gap-16">
+        <div className="min-w-0">
+          <h3 id="work-hero-name" className="display-l">
+            <P>{project.name}</P>
+          </h3>
+        </div>
+        <div className="flex shrink-0 flex-col gap-5 md:max-w-[36ch] md:items-end md:text-right">
+          <p className="mono flex flex-wrap gap-x-6 gap-y-2 md:justify-end">
             <span>{project.code}</span>
             <span>
               <P>{project.year}</P>
             </span>
-            <span>
-              <P>{project.duration ?? ""}</P>
-            </span>
-          </figcaption>
-        </figure>
-
-        {/* Name over the image at 30-55%; stacked beneath it otherwise */}
-        <h3 id="work-hero-name" className="display-l mt-10" data-work-name>
-          <P>{project.name}</P>
-        </h3>
-
-        {/* Breakdown */}
-        <div className="mt-6 grid gap-10 md:grid-cols-3" data-work-breakdown>
-          <p className="body text-ink-soft md:col-span-3" data-work-desc>
+            {project.duration ? (
+              <span>
+                <P>{project.duration}</P>
+              </span>
+            ) : null}
+          </p>
+          <p className="body text-[15px] text-ink-soft">
             <P>{project.description}</P>
           </p>
+          {openHref ? (
+            <a
+              href={openHref}
+              className="rule-link mono inline-flex items-center gap-3 self-start text-ink md:self-end"
+              data-cursor="OPEN"
+              rel="noopener noreferrer"
+              target="_blank"
+            >
+              OPEN
+              <ArrowRight />
+            </a>
+          ) : null}
+        </div>
+      </header>
+
+      <figure className="relative mt-10 md:mt-14">
+        <div className="relative">
+          <div
+            aria-hidden="true"
+            className="pointer-events-none absolute inset-0 border border-rule"
+          />
+          <RegistrationCross className="absolute -left-1.5 -top-1.5 text-ink" />
+          <RegistrationCross className="absolute -right-1.5 -top-1.5 text-ink" />
+          <RegistrationCross className="absolute -bottom-1.5 -left-1.5 text-ink" />
+          <RegistrationCross className="absolute -bottom-1.5 -right-1.5 text-ink" />
+          <Image
+            src={project.image.src}
+            width={project.image.width}
+            height={project.image.height}
+            alt={project.image.alt}
+            priority
+            unoptimized={project.image.src.endsWith(".svg")}
+            sizes="(min-width: 1440px) 1296px, 100vw"
+            className="h-auto w-full"
+          />
+        </div>
+      </figure>
+
+      <div className="mt-12 grid gap-10 md:mt-16 md:grid-cols-3">
+        {project.problem?.length ? (
           <div>
             <p className="mono">{workLabels.problem}</p>
-            <ul className="body mt-4 text-[15px] text-ink-soft">
-              {project.problem?.map((line) => (
+            <ul className="body mt-4 space-y-3 text-[15px] text-ink-soft">
+              {project.problem.map((line) => (
                 <li key={line}>
                   <P>{line}</P>
                 </li>
               ))}
             </ul>
           </div>
+        ) : null}
+        {project.built?.length ? (
           <div>
             <p className="mono">{workLabels.built}</p>
-            <ul className="body mt-4 text-[15px] text-ink-soft">
-              {project.built?.map((line) => (
+            <ul className="body mt-4 space-y-3 text-[15px] text-ink-soft">
+              {project.built.map((line) => (
                 <li key={line}>
                   <P>{line}</P>
                 </li>
               ))}
             </ul>
           </div>
-          <div>
-            <p className="mono">{workLabels.stack}</p>
-            <p className="mono-l mt-4 leading-relaxed text-ink">
-              <P>{project.stack}</P>
-            </p>
-          </div>
+        ) : null}
+        <div>
+          <p className="mono">{workLabels.stack}</p>
+          <p className="mono-l mt-4 leading-relaxed text-ink">
+            <P>{project.stack}</P>
+          </p>
         </div>
+      </div>
 
-        {/* Metrics: provisional values, never plausible-looking specifics */}
-        <dl
-          className="hairline-t mt-14 grid gap-10 pt-10 sm:grid-cols-3"
-          data-work-metrics
-        >
-          {project.metrics?.map((metric) => (
+      {project.metrics?.length ? (
+        <dl className="hairline-t mt-14 grid gap-10 pt-10 sm:grid-cols-3">
+          {project.metrics.map((metric) => (
             <div key={metric.label}>
               <dd className="price text-ink">
-                <DigitRoll value={metric.display} trigger="event" />
+                <P>{metric.display}</P>
               </dd>
               <dt className="mono mt-3">
                 <P>{metric.label}</P>
@@ -172,7 +160,7 @@ function HeroCaseStudy({ project }: { project: Project }) {
             </div>
           ))}
         </dl>
-      </div>
+      ) : null}
     </article>
   );
 }

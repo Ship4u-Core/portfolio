@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { normalise, validate, type EnquiryPayload } from "@/lib/enquiry";
+import { sendEnquiry } from "@/lib/mail";
 import { ship } from "@/content/sections";
 
 export const runtime = "nodejs";
@@ -8,8 +9,8 @@ export const runtime = "nodejs";
  * POST /api/enquiry
  *
  * Accepts JSON (the site's form with JavaScript) or form-encoded bodies
- * (the same form with JavaScript disabled). Validates server-side, logs the
- * payload, returns 200 { ok: true }.
+ * (the same form with JavaScript disabled). Validates server-side, emails
+ * the payload via Resend, returns 200 { ok: true }.
  */
 export async function POST(request: Request) {
   const type = request.headers.get("content-type") ?? "";
@@ -34,7 +35,13 @@ export async function POST(request: Request) {
     return NextResponse.json({ ok: false, errors }, { status: 400 });
   }
 
-  await deliver(payload);
+  try {
+    await deliver(payload);
+  } catch (err) {
+    console.error("[ship4u] enquiry delivery failed", err);
+    if (isForm) return htmlResponse(errorPage({ form: ship.errors.network }), 500);
+    return NextResponse.json({ ok: false }, { status: 500 });
+  }
 
   if (isForm) return htmlResponse(successPage(), 200);
   return NextResponse.json({ ok: true });
@@ -42,15 +49,8 @@ export async function POST(request: Request) {
 
 async function deliver(payload: EnquiryPayload) {
   console.log("[ship4u] enquiry", JSON.stringify({ ...payload, receivedAt: new Date().toISOString() }));
-
-  // TODO(ship4u): wire a transport. Options, in order of effort:
-  //   1. Resend  — `await resend.emails.send({...})`, add RESEND_API_KEY
-  //   2. Formspree/Web3Forms — POST-forward, no backend key needed
-  //   3. Supabase/Postgres table — if you want a CRM later
-  // Until one is wired, enquiries are logged only and WILL BE LOST.
-  console.warn(
-    "[ship4u] No enquiry transport is wired. This enquiry was logged to the server console only and WILL BE LOST. See src/app/api/enquiry/route.ts.",
-  );
+  const sent = await sendEnquiry(payload);
+  console.log("[ship4u] enquiry mailed", sent?.id);
 }
 
 /* ---- Minimal HTML for the JavaScript-disabled path ---- */

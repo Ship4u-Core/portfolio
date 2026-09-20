@@ -13,25 +13,25 @@ export const stack: StackBand[] = [
         id: "nextjs",
         name: "Next.js",
         rationale:
-          "Next.js — server rendering and static pages in one framework, so marketing pages index and product pages stay fast.",
+          "Next.js — report jobs queue from Next.js APIs, admin dashboards fetch live data, and the Eidos UI ships on it.",
       },
       {
         id: "react",
         name: "React",
         rationale:
-          "React — the largest hiring pool and component ecosystem. Boring is a feature when someone else maintains the product later.",
+          "React — product surfaces and internal dashboards. The same components talk to FastAPI and to Next.",
       },
       {
         id: "typescript",
         name: "TypeScript",
         rationale:
-          "TypeScript — catches the bugs that would otherwise surface on a client's phone. Every line we ship is typed.",
+          "TypeScript — every line we ship is typed. Catches the bugs that would otherwise hit a client's phone.",
       },
       {
-        id: "tailwind",
-        name: "Tailwind",
+        id: "python",
+        name: "Python",
         rationale:
-          "Tailwind — design tokens live in one place and the stylesheet stops growing. Restraint is easier when every value has a name.",
+          "Python — FastAPI, LangGraph, workers, and the Astro Engine. The language the AI libraries actually live in.",
       },
     ],
   },
@@ -43,19 +43,25 @@ export const stack: StackBand[] = [
         id: "nodejs",
         name: "Node.js",
         rationale:
-          "Node.js — one language across client and server, so two engineers can own the whole stack. That is the point of hiring two people.",
+          "Node.js — Next.js API routes and Express services. One language with the client, so two people can own the request path.",
+      },
+      {
+        id: "golang",
+        name: "Golang",
+        rationale:
+          "Golang — services that have to stay small and concurrent. Chi when the API is Go; Python stays where the AI libraries are.",
+      },
+      {
+        id: "graphql",
+        name: "GraphQL",
+        rationale:
+          "GraphQL — the in-house Astro Engine over FastAPI. Typed queries, no paid astrology provider in the loop.",
       },
       {
         id: "fastapi",
         name: "FastAPI",
         rationale:
-          "FastAPI — Python, where the AI libraries are. Typed request models, generated docs, async by default.",
-      },
-      {
-        id: "trpc",
-        name: "tRPC",
-        rationale:
-          "tRPC — end-to-end types between client and server without writing a schema twice. Refactors stop being frightening.",
+          "FastAPI — Astro Engine, RAG backends, Eidos. We moved Flask here for async throughput and kept it.",
       },
     ],
   },
@@ -67,19 +73,19 @@ export const stack: StackBand[] = [
         id: "postgres",
         name: "PostgreSQL",
         rationale:
-          "PostgreSQL — relational because most products have relationships, and you will regret JSON columns in month four.",
+          "PostgreSQL — relational because Eidos and most products have relationships. We will regret JSON columns in month four.",
       },
       {
         id: "redis",
         name: "Redis",
         rationale:
-          "Redis — caching, queues and rate limits without a second database. Used for what it is good at and nothing else.",
+          "Redis — time-decayed affinity, short-term agent memory, job locks around the edges. Used for what it is good at.",
       },
       {
-        id: "s3",
-        name: "S3",
+        id: "mongodb",
+        name: "MongoDB",
         rationale:
-          "S3 — object storage that has not failed in a way that mattered. Files do not belong in a database.",
+          "MongoDB — report-job locking, structured user memory, CRM lead stores. Documents when the shape actually is a document.",
       },
     ],
   },
@@ -88,16 +94,16 @@ export const stack: StackBand[] = [
     label: "AI",
     nodes: [
       {
-        id: "claude",
-        name: "Claude API",
+        id: "gemini",
+        name: "Gemini",
         rationale:
-          "Claude API — strong on long documents and on following instructions exactly. Our default for agents that must not improvise.",
+          "Gemini — chat intent and the Eidos critic loop. Default when we need a fast, cheap generation pass.",
       },
       {
         id: "openai",
         name: "OpenAI",
         rationale:
-          "OpenAI — broad model range and mature tooling. Used where the evals say it wins, not by default.",
+          "OpenAI — ranking and chat intent alongside Gemini. Used where the evals say it wins, not by habit.",
       },
       {
         id: "pgvector",
@@ -109,7 +115,7 @@ export const stack: StackBand[] = [
         id: "langgraph",
         name: "LangGraph",
         rationale:
-          "LangGraph — agent workflows as explicit graphs, so the failure path is drawn before it is hit.",
+          "LangGraph — orchestrator, workers, judge, retries. The TrustAstrology agents and the Eidos critic are graphs, not prompts.",
       },
     ],
   },
@@ -118,28 +124,34 @@ export const stack: StackBand[] = [
     label: "INFRA",
     nodes: [
       {
-        id: "vercel",
-        name: "Vercel",
+        id: "gcp",
+        name: "GCP",
         rationale:
-          "Vercel — zero-config Next.js deploys with a preview URL on every commit. The weekly build you can open lives here.",
+          "GCP — Pub/Sub into BigQuery, Cloud Run, GCE workers, GCS for 35+ report PDFs. Where the heavy async work runs.",
       },
       {
         id: "aws",
         name: "AWS",
         rationale:
-          "AWS — for anything that needs a VPC, a queue or a GPU. Chosen when Vercel stops being the simple answer.",
+          "AWS — VPC, ALB, ECS Fargate, EventBridge, Lambda, S3. Chosen when the job needs a box, a queue, or a cron.",
       },
       {
         id: "docker",
         name: "Docker",
         rationale:
-          "Docker — the same container on a laptop, in CI and in production. It removes 'works on my machine' from the conversation.",
+          "Docker — the same container on a laptop, on ECS, and on the Eidos box behind Nginx. It ends 'works on my machine'.",
       },
       {
-        id: "gha",
-        name: "GitHub Actions",
+        id: "azure",
+        name: "Azure",
         rationale:
-          "GitHub Actions — tests, type checks and deploys on every push. Set up once, reviewed in the pull request.",
+          "Azure — when the client's estate is already there. Same boxes, queues and crons as AWS, different console.",
+      },
+      {
+        id: "jenkins",
+        name: "Jenkins",
+        rationale:
+          "Jenkins — Eidos deploys to a raw AWS host, Elastic IP, Nginx. GitHub Actions for the repos that do not need a box.",
       },
     ],
   },
@@ -149,20 +161,22 @@ export const stack: StackBand[] = [
 export const stackEdges: StackEdge[] = [
   { from: "react", to: "nextjs" },
   { from: "typescript", to: "react" },
-  { from: "tailwind", to: "typescript" },
+  { from: "python", to: "typescript" },
   { from: "nextjs", to: "nodejs" },
-  { from: "typescript", to: "trpc" },
+  { from: "typescript", to: "graphql" },
+  { from: "python", to: "golang" },
   { from: "nodejs", to: "postgres" },
   { from: "fastapi", to: "openai" },
   { from: "redis", to: "postgres" },
-  { from: "s3", to: "redis" },
-  { from: "openai", to: "claude" },
+  { from: "mongodb", to: "redis" },
+  { from: "openai", to: "gemini" },
   { from: "pgvector", to: "openai" },
   { from: "langgraph", to: "pgvector" },
-  { from: "aws", to: "vercel" },
+  { from: "aws", to: "gcp" },
   { from: "docker", to: "aws" },
-  { from: "gha", to: "docker" },
-  { from: "vercel", to: "nextjs" },
+  { from: "azure", to: "docker" },
+  { from: "jenkins", to: "azure" },
+  { from: "gcp", to: "nextjs" },
   { from: "aws", to: "postgres" },
 ];
 

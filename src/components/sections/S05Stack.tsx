@@ -26,7 +26,7 @@ export function S05Stack() {
             <div className="hidden md:block">
               <p className="body text-ink-soft">{stackIntro}</p>
               <div className="relative mt-14" data-stack-wrap>
-                <StackSchematic className="mx-auto h-auto w-full max-w-[980px]" />
+                <StackSchematic className="mx-auto h-auto w-full max-w-[1100px]" />
                 <div
                   className="mono pointer-events-none absolute left-0 top-0 z-10 max-w-[38ch] border border-rule bg-paper-raised px-3 py-2 normal-case leading-relaxed tracking-normal text-ink"
                   style={{ fontSize: 12, letterSpacing: 0 }}

@@ -13,7 +13,7 @@ export function GridOverlay() {
   useEffect(() => {
     if (!isDev) return;
     const onKey = (event: KeyboardEvent) => {
-      if (event.key.toLowerCase() !== "g") return;
+      if (event.key?.toLowerCase() !== "g") return;
       const target = event.target as HTMLElement | null;
       if (
         target &&

@@ -562,79 +562,8 @@ html.js:not(.reduce) [data-build-system] g[data-el="node-eval"].signal-stroke {
 }
 
 /* ------------------------------------------------------------------ */
-/* 02 Selected work: pinned zoom (desktop, motion) + row hover           */
+/* 02 Selected work: supporting row hover                                */
 /* ------------------------------------------------------------------ */
-
-@media (min-width: 768px) {
-  /* Pinned mode: the stage is one viewport tall, every piece absolute.
-     Set by WorkScene only on desktop with motion; the static document
-     never sees these rules. */
-  html.js:not(.reduce) [data-work-stage][data-pinned] {
-    position: relative;
-    height: 100svh;
-    overflow: clip;
-  }
-
-  html.js:not(.reduce) [data-work-stage][data-pinned] [data-work-figure] {
-    position: absolute;
-    inset: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin: 0;
-  }
-
-  html.js:not(.reduce) [data-work-stage][data-pinned] [data-work-frame] {
-    width: 100%;
-    will-change: transform;
-  }
-
-  html.js:not(.reduce) [data-work-stage][data-pinned] [data-work-annotations] {
-    position: absolute;
-    left: 0;
-    margin: 0;
-    width: 60vw;
-    padding-right: var(--gutter);
-    justify-content: flex-start;
-    gap: 40px;
-  }
-
-  html.js:not(.reduce) [data-work-stage][data-pinned] [data-work-name] {
-    position: absolute;
-    left: 0;
-    bottom: 22%;
-    margin: 0;
-    max-width: 54%;
-    font-size: clamp(2rem, 4.2vw, 3.75rem);
-    line-height: 0.98;
-    overflow-wrap: anywhere;
-    color: var(--ink);
-    will-change: clip-path, transform;
-  }
-
-  html.js:not(.reduce) [data-work-stage][data-pinned] [data-work-breakdown],
-  html.js:not(.reduce) [data-work-stage][data-pinned] [data-work-metrics] {
-    position: absolute;
-    top: 50%;
-    translate: 0 -50%;
-    margin: 0;
-    padding: 0;
-    border: 0;
-    display: flex;
-    flex-direction: column;
-    gap: 28px;
-    will-change: clip-path;
-  }
-
-  html.js:not(.reduce) [data-work-stage][data-pinned] [data-work-desc] {
-    font-size: 15px;
-  }
-
-  html.js:not(.reduce) [data-work-stage][data-pinned] [data-work-metrics] > div {
-    display: flex;
-    flex-direction: column;
-  }
-}
 
 /* Supporting rows: sunk fill and cursor-following preview on hover. */
 [data-work-row][data-interactive] {

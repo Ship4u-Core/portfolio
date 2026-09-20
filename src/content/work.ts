@@ -1,67 +1,63 @@
 import type { Project } from "@/types/content";
 
-/**
- * PLACEHOLDER CASE STUDIES.
- *
- * Every entry here is provisional. Metric values are deliberately blank
- * (spec 11.4): a number that looks real will end up in production, a
- * visible blank will not. Replace the tokens, then remove `__placeholder`.
- */
-
 export const heroProject: Project = {
-  __placeholder: true,
   code: "W-01",
-  name: "[[WORK_1_NAME]]",
-  year: "[[WORK_1_YEAR]]",
-  duration: "[[WORK_1_DURATION]]",
-  description: "[[WORK_1_DESCRIPTION]]",
-  problem: ["[[WORK_1_PROBLEM]]"],
-  built: ["[[WORK_1_BUILT]]"],
-  stack: "[[WORK_1_STACK]]",
+  name: "HearU",
+  year: "2025",
+  description: "An AI mental-wellness journal with a voice assistant, shipped on Kubernetes.",
+  problem: [
+    "Most wellness apps treat the journal as a text box and the model as a demo.",
+    "There was no confidential write-and-speak loop that could actually ship on a cluster.",
+  ],
+  built: [
+    "A FastAPI backend and React journal, with a Gemini voice assistant for people who would rather talk than type.",
+    "CI on GitHub Actions and a Kubernetes deploy on GCP, so the thing you open is the thing that runs.",
+  ],
+  stack: "FASTAPI · REACT · GEMINI · GITHUB ACTIONS · KUBERNETES · GCP",
   metrics: [
-    { display: "—%", label: "[[WORK_1_METRIC_1]]" },
-    { display: "0.0s", label: "[[WORK_1_METRIC_2]]" },
-    { display: "[metric]", label: "[[WORK_1_METRIC_3]]" },
+    { display: "1", label: "VOICE ASSISTANT" },
+    { display: "1", label: "KUBERNETES CLUSTER" },
+    { display: "2", label: "SURFACES WEB AND VOICE" },
   ],
   image: {
-    src: "/work/placeholder-01.svg",
+    src: "/work/placeholder-02.svg",
     width: 1600,
     height: 1000,
-    alt: "Placeholder frame for the hero case study. Replace before launch.",
+    alt: "HearU — AI mental-wellness journal, registration frame.",
   },
-  href: null,
+  href: "https://github.com/laksh-krishna-sharma/HearU",
 };
 
 export const supportingProjects: Project[] = [
   {
-    __placeholder: true,
     code: "W-02",
-    name: "[[WORK_2_NAME]]",
-    year: "[[WORK_2_YEAR]]",
-    description: "[[WORK_2_DESCRIPTION]]",
-    stack: "[[WORK_2_STACK]]",
+    name: "Eidos",
+    year: "2025",
+    description:
+      "A self-healing RAG system that evaluates its own answers and rewrites the weak ones.",
+    stack: "NEXT.JS · FASTAPI · LANGGRAPH · QDRANT · POSTGRES · R2 · AWS",
     image: {
-      src: "/work/placeholder-02.svg",
+      src: "/work/placeholder-01.webp",
       width: 1600,
       height: 1000,
-      alt: "Placeholder frame for the second project. Replace before launch.",
+      alt: "Eidos — self-healing RAG system, registration frame.",
     },
-    href: null,
+    href: "https://self-healing-rag-frontend.karkisinghgamer.workers.dev/login",
   },
   {
-    __placeholder: true,
     code: "W-03",
-    name: "[[WORK_3_NAME]]",
-    year: "[[WORK_3_YEAR]]",
-    description: "[[WORK_3_DESCRIPTION]]",
-    stack: "[[WORK_3_STACK]]",
+    name: "Exovision",
+    year: "2025",
+    description:
+      "Custom model detects comets, planets, and stars and determines their positions based on their movement.",
+    stack: "PYTHON · CUSTOM ML MODEL · ASTRONOMY",
     image: {
-      src: "/work/placeholder-03.svg",
+      src: "/work/placeholder-03.webp",
       width: 1600,
       height: 1000,
-      alt: "Placeholder frame for the third project. Replace before launch.",
+      alt: "Exovision — celestial object detection and tracking pipeline, registration frame.",
     },
-    href: null,
+    href: "https://github.com/laksh-krishna-sharma/Exovision",
   },
 ];
 
