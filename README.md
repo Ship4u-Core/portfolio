@@ -6,6 +6,7 @@ Next.js 16 (App Router, Turbopack), TypeScript, Tailwind CSS v4, GSAP with Scrol
 
 The full specification the site was built from is `prompt.md`.
 
+
 ## Local setup
 
 Requirements: Node 20 or later, npm 10 or later.
