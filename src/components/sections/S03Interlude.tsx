@@ -1,10 +1,12 @@
 import { interlude } from "@/content/sections";
 import { WireStatic } from "@/components/scenes/WireStatic";
+import { WireMount } from "@/components/scenes/WireMount";
 
 /**
  * 03 INTERLUDE. The single WebGL moment; a breath between the work and the
  * process. No header, no section code. The static wireframe is always in
- * the markup; WireObject (Phase 4) mounts over it on capable desktops.
+ * the markup; WireObject mounts over it on capable desktops once the
+ * section is near the viewport.
  */
 export function S03Interlude() {
   return (
@@ -15,12 +17,9 @@ export function S03Interlude() {
       data-section="03"
       data-cursor="ORBIT"
     >
-      <div
-        className="absolute inset-0 flex items-center justify-center"
-        data-wire-mount
-      >
-        <WireStatic className="h-[min(64svh,64vw)] w-[min(64svh,64vw)]" />
-      </div>
+      <WireMount className="absolute inset-0 flex items-center justify-center">
+        <WireStatic className="h-full w-full" />
+      </WireMount>
 
       <div className="container-doc absolute inset-x-0 bottom-0 pb-10 md:pb-14">
         <p className="serif-h2 max-w-[26ch]" data-interlude-line>
