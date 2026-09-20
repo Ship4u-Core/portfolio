@@ -1,26 +1,695 @@
 @import "tailwindcss";
 
+/* ------------------------------------------------------------------ */
+/* Tokens (spec 3.3, 3.4, 3.6)                                          */
+/* ------------------------------------------------------------------ */
+
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* Base */
+  --paper: #f5f3ee;
+  --paper-raised: #fbfaf7;
+  --paper-sunk: #edeae3;
+
+  /* Ink */
+  --ink: #111110;
+  --ink-soft: #4a4843;
+  --graphite: #6e6b64;
+  --rule: #dcd8cf;
+
+  /* Accent, single, used sparingly */
+  --signal: #e2401c;
+  --signal-deep: #b22f10;
+  --signal-wash: #fae6df;
+
+  /* Inverted band (pricing section only) */
+  --ink-flood: #141311;
+  --paper-on-ink: #f2efe8;
+  --rule-on-ink: #35322d;
+
+  /* Type scale */
+  --type-display-xl: clamp(3.25rem, 11.5vw, 10.5rem);
+  --type-display-l: clamp(2.5rem, 7vw, 6rem);
+  --type-h2: clamp(1.875rem, 4vw, 3.25rem);
+  --type-h3: clamp(1.25rem, 2vw, 1.75rem);
+  --type-body-l: 1.1875rem;
+  --type-body: 1.0625rem;
+  --type-mono: 0.6875rem;
+  --type-mono-l: 0.8125rem;
+
+  /* Layout */
+  --content-max: 1440px;
+  --gutter: 24px;
+  --grid-gap: 24px;
+  --section-pad: 120px;
+  --rail-height: 44px;
+
+  /* Motion (CSS side; GSAP uses lib/motion.ts) */
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in-out: cubic-bezier(0.76, 0, 0.24, 1);
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
+@media (min-width: 768px) {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --gutter: 40px;
+    --section-pad: 180px;
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+@media (min-width: 1024px) {
+  :root {
+    --gutter: 72px;
+  }
+}
+
+@theme inline {
+  --color-paper: var(--paper);
+  --color-paper-raised: var(--paper-raised);
+  --color-paper-sunk: var(--paper-sunk);
+  --color-ink: var(--ink);
+  --color-ink-soft: var(--ink-soft);
+  --color-graphite: var(--graphite);
+  --color-rule: var(--rule);
+  --color-signal: var(--signal);
+  --color-signal-deep: var(--signal-deep);
+  --color-signal-wash: var(--signal-wash);
+  --color-ink-flood: var(--ink-flood);
+  --color-paper-on-ink: var(--paper-on-ink);
+  --color-rule-on-ink: var(--rule-on-ink);
+
+  --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, SFMono-Regular, Menlo,
+    monospace;
+  --font-serif: var(--font-instrument-serif), Georgia, serif;
+
+  --radius-doc: 2px;
+}
+
+/* ------------------------------------------------------------------ */
+/* Base                                                                 */
+/* ------------------------------------------------------------------ */
+
+@layer base {
+  html {
+    background: var(--paper);
+    color: var(--ink);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+    scroll-behavior: auto;
+  }
+
+  body {
+    min-height: 100svh;
+    font-size: var(--type-body);
+    line-height: 1.65;
+    overflow-x: clip;
+  }
+
+  ::selection {
+    background: var(--paper-sunk);
+    color: var(--ink);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--signal);
+    outline-offset: 2px;
+  }
+
+  button,
+  input,
+  select,
+  textarea {
+    font: inherit;
+    color: inherit;
+    border-radius: var(--radius-doc);
+  }
+
+  button {
+    cursor: pointer;
+    background: none;
+    border: 0;
+    padding: 0;
+    text-align: inherit;
+  }
+
+  svg {
+    display: block;
+  }
+
+  hr {
+    border: 0;
+    border-top: 1px solid var(--rule);
+  }
+
+  a {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  strong {
+    font-weight: 600;
+  }
+}
+
+/* ------------------------------------------------------------------ */
+/* Type utilities                                                       */
+/* ------------------------------------------------------------------ */
+
+@utility display-xl {
+  font-family: var(--font-sans);
+  font-size: var(--type-display-xl);
+  font-weight: 800;
+  letter-spacing: -0.045em;
+  line-height: 0.84;
+}
+
+@utility display-l {
+  font-family: var(--font-sans);
+  font-size: var(--type-display-l);
+  font-weight: 800;
+  letter-spacing: -0.035em;
+  line-height: 0.9;
+}
+
+@utility type-h2 {
+  font-family: var(--font-sans);
+  font-size: var(--type-h2);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.02;
+}
+
+@utility type-h3 {
+  font-family: var(--font-sans);
+  font-size: var(--type-h3);
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  line-height: 1.2;
+}
+
+@utility body-l {
+  font-size: var(--type-body-l);
+  line-height: 1.55;
+  max-width: 62ch;
+}
+
+@utility body {
+  font-size: var(--type-body);
+  line-height: 1.65;
+  max-width: 68ch;
+}
+
+@utility mono {
+  font-family: var(--font-mono);
+  font-size: var(--type-mono);
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  line-height: 1;
+  color: var(--mono-color, var(--graphite));
+  font-variant-numeric: tabular-nums;
+}
+
+@utility mono-l {
+  font-family: var(--font-mono);
+  font-size: var(--type-mono-l);
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  line-height: 1.4;
+  color: var(--mono-color, var(--graphite));
+  font-variant-numeric: tabular-nums;
+}
+
+@utility serif {
+  font-family: var(--font-serif);
+  font-weight: 400;
+  font-style: italic;
+  letter-spacing: -0.005em;
+}
+
+/* The editorial voice: exactly four italic lines across the site. */
+@utility serif-h2 {
+  font-family: var(--font-serif);
+  font-weight: 400;
+  font-style: italic;
+  font-size: var(--type-h2);
+  letter-spacing: -0.01em;
+  line-height: 1.1;
+}
+
+@utility serif-h3 {
+  font-family: var(--font-serif);
+  font-weight: 400;
+  font-style: italic;
+  font-size: var(--type-h3);
+  letter-spacing: -0.005em;
+  line-height: 1.3;
+}
+
+@utility serif-body-l {
+  font-family: var(--font-serif);
+  font-weight: 400;
+  font-style: italic;
+  font-size: calc(var(--type-body-l) * 1.15);
+  line-height: 1.45;
+}
+
+/* Prices: Geist Mono at h2 size, tabular figures, right aligned by layout. */
+@utility price {
+  font-family: var(--font-mono);
+  font-size: var(--type-h2);
+  font-weight: 500;
+  letter-spacing: -0.02em;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+@utility tabular {
+  font-variant-numeric: tabular-nums;
+}
+
+/* ------------------------------------------------------------------ */
+/* Layout utilities                                                     */
+/* ------------------------------------------------------------------ */
+
+@utility container-doc {
+  width: 100%;
+  max-width: var(--content-max);
+  margin-inline: auto;
+  padding-inline: var(--gutter);
+}
+
+@utility grid-12 {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  column-gap: var(--grid-gap);
+}
+
+@utility section-pad {
+  padding-block: var(--section-pad);
+}
+
+@utility hairline-t {
+  border-top: 1px solid var(--rule);
+}
+
+@utility hairline-b {
+  border-bottom: 1px solid var(--rule);
+}
+
+@utility radius-doc {
+  border-radius: var(--radius-doc);
+}
+
+/* ------------------------------------------------------------------ */
+/* Document sections                                                    */
+/* ------------------------------------------------------------------ */
+
+.doc-section {
+  position: relative;
+  border-top: 1px solid var(--rule);
+}
+
+.doc-section[data-tone="ink"] {
+  --rule: var(--rule-on-ink);
+  --mono-color: color-mix(in srgb, var(--paper-on-ink) 55%, var(--ink-flood));
+  background: var(--ink-flood);
+  color: var(--paper-on-ink);
+  border-top-color: transparent;
+}
+
+/* Accent-stroked drawing element (one per stage in the build system) */
+.signal-stroke [stroke] {
+  stroke: var(--signal);
+}
+
+.signal-stroke text {
+  fill: var(--signal-deep);
+}
+
+/* Hero and closing display sizes below 768px (spec 8) */
+.hero-display {
+  font-size: var(--type-display-xl);
+}
+
+.ship-display {
+  font-size: var(--type-display-xl);
+}
+
+@media (max-width: 767px) {
+  .hero-display {
+    font-size: clamp(2.75rem, 13vw, 4rem);
+  }
+
+  .ship-display {
+    font-size: clamp(2.5rem, 12vw, 4rem);
+  }
+}
+
+/* ------------------------------------------------------------------ */
+/* 01 Build system: static and reduced-motion renders show stage four.  */
+/* ------------------------------------------------------------------ */
+
+html:not(.js) [data-build-system][data-animated] g[data-el]:not([data-to="4"]),
+html.reduce [data-build-system][data-animated] g[data-el]:not([data-to="4"]) {
+  display: none;
+}
+
+html:not(.js) [data-build-system][data-animated] g[data-signal-at="4"] [stroke],
+html.reduce [data-build-system][data-animated] g[data-signal-at="4"] [stroke] {
+  stroke: var(--signal);
+}
+
+html.js:not(.reduce) [data-build-system][data-animated] g[data-el] {
+  visibility: hidden;
+}
+
+/* Copy blocks: stacked by default; the pinned scene positions them. */
+html.js:not(.reduce) [data-cap-copy][data-pinned] {
+  position: relative;
+}
+
+html.js:not(.reduce) [data-cap-copy][data-pinned] > article {
+  position: absolute;
+  inset: 0 0 auto 0;
+  margin: 0;
+}
+
+/* ------------------------------------------------------------------ */
+/* 04 Process: vertical list is the base layout. Horizontal track is    */
+/* applied by the pinned scene on desktop only (see S04Process).        */
+/* ------------------------------------------------------------------ */
+
+.process-track {
+  position: relative;
+  padding-left: 44px;
+}
+
+.process-line {
+  position: absolute;
+  left: 11px;
+  top: 0;
+  bottom: 0;
+  width: 1px;
+  background: var(--rule);
+}
+
+.process-dot {
+  position: absolute;
+  left: 6.5px;
+  bottom: 0;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--signal);
+}
+
+.process-stages {
+  display: flex;
+  flex-direction: column;
+  gap: 56px;
+}
+
+.process-stage {
+  position: relative;
+}
+
+.process-stage .process-index {
+  color: var(--ink);
+}
+
+html.js:not(.reduce) .process-stage .process-index {
+  color: var(--graphite);
+}
+
+html.js:not(.reduce) .process-stage[data-passed] .process-index {
+  color: var(--ink);
+}
+
+@media (min-width: 768px) {
+  html.js:not(.reduce) .process-track[data-horizontal] {
+    padding-left: 0;
+    height: 100svh;
+    display: flex;
+    align-items: center;
+    overflow: hidden;
+  }
+
+  html.js:not(.reduce) .process-track[data-horizontal] .process-line {
+    left: 0;
+    right: 0;
+    top: 50%;
+    bottom: auto;
+    height: 1px;
+    width: auto;
+  }
+
+  html.js:not(.reduce) .process-track[data-horizontal] .process-dot {
+    left: 0;
+    bottom: auto;
+    top: calc(50% - 4.5px);
+  }
+
+  html.js:not(.reduce) .process-track[data-horizontal] .process-stages {
+    flex-direction: row;
+    gap: 0;
+    width: max-content;
+    will-change: transform;
+  }
+
+  html.js:not(.reduce) .process-track[data-horizontal] .process-stage {
+    width: 420px;
+    padding-right: 72px;
+    padding-top: 40px;
+  }
+
+  html.js:not(.reduce) .process-track[data-horizontal] .process-stage::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: -28px;
+    width: 1px;
+    height: 16px;
+    background: var(--rule);
+  }
+}
+
+/* ------------------------------------------------------------------ */
+/* 07 Studio                                                            */
+/* ------------------------------------------------------------------ */
+
+.founder-initial {
+  font-family: var(--font-serif);
+  font-style: normal;
+  font-weight: 400;
+  font-size: calc(var(--type-display-l) * 1.7);
+  line-height: 0.8;
+  color: var(--signal);
+  opacity: 0.08;
+  position: absolute;
+  left: -0.14em;
+  top: 0;
+  pointer-events: none;
+  user-select: none;
+}
+
+@media (min-width: 768px) {
+  .founder-initial {
+    opacity: 0.12;
+  }
+}
+
+/* Prevent full-bleed element overflow from creating horizontal scroll */
+.bleed {
+  width: 100vw;
+  margin-left: calc(50% - 50vw);
+}
+
+/* ------------------------------------------------------------------ */
+/* Motion gates                                                         */
+/*                                                                      */
+/* Pre-animation (hidden) states are only applied when JavaScript is    */
+/* running and the visitor has not asked for reduced motion. Server     */
+/* HTML, JS-disabled and reduced-motion visitors always see final state.*/
+/* ------------------------------------------------------------------ */
+
+html.js:not(.reduce) [data-reveal="clip"] {
+  clip-path: inset(0 100% 0 0);
+}
+
+html.js:not(.reduce) [data-reveal="clip-up"] {
+  clip-path: inset(100% 0 0 0);
+}
+
+html.js:not(.reduce) [data-reveal="mask-up"] {
+  clip-path: inset(100% 0 0 0);
+}
+
+html.js:not(.reduce) [data-reveal="rule"] {
+  transform: scaleX(0);
+  transform-origin: left center;
+}
+
+html.js:not(.reduce) [data-reveal="fade"] {
+  opacity: 0;
+}
+
+html.js:not(.reduce) [data-reveal="draw"] {
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+}
+
+html.reduce *,
+html.reduce *::before,
+html.reduce *::after {
+  animation: none !important;
+  transition-duration: 0.2s !important;
+  transition-property: color, background-color, border-color, opacity,
+    outline-color, text-decoration-color, fill, stroke !important;
+}
+
+/* ------------------------------------------------------------------ */
+/* Cursor                                                               */
+/* ------------------------------------------------------------------ */
+
+html.custom-cursor,
+html.custom-cursor * {
+  cursor: none !important;
+}
+
+/* ------------------------------------------------------------------ */
+/* Interactive underlines (draw left to right on hover / focus)         */
+/* ------------------------------------------------------------------ */
+
+.rule-link {
+  position: relative;
+}
+
+.rule-link::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -2px;
+  height: 1px;
+  background: currentColor;
+  transform: scaleX(0);
+  transform-origin: left center;
+  transition: transform 0.35s var(--ease-out);
+}
+
+.rule-link:hover::after,
+.rule-link:focus-visible::after {
+  transform: scaleX(1);
+}
+
+.rule-link[data-static-rule]::after {
+  transform: scaleX(1);
+  background: var(--rule);
+}
+
+.rule-link[data-static-rule]:hover::after,
+.rule-link[data-static-rule]:focus-visible::after {
+  background: currentColor;
+}
+
+/* ------------------------------------------------------------------ */
+/* Form fields (spec 6.9)                                               */
+/* ------------------------------------------------------------------ */
+
+.field {
+  display: block;
+  position: relative;
+}
+
+.field-input {
+  display: block;
+  width: 100%;
+  background: transparent;
+  border: 0;
+  border-bottom: 1px solid var(--rule);
+  border-radius: var(--radius-doc) var(--radius-doc) 0 0;
+  padding: 12px 8px 12px 8px;
+  font-size: var(--type-body);
+  line-height: 1.4;
+  color: var(--ink);
+  appearance: none;
+  transition:
+    background-color 0.2s var(--ease-out),
+    border-color 0.2s var(--ease-out);
+}
+
+.field-input::placeholder {
+  color: var(--graphite);
+  opacity: 0.7;
+}
+
+.field-input:focus {
+  outline: none;
+  background: var(--paper-raised);
+  border-bottom-color: var(--signal);
+}
+
+.field-input:focus-visible {
+  outline: none;
+}
+
+.field-input[aria-invalid="true"] {
+  border-bottom-color: var(--signal-deep);
+}
+
+select.field-input {
+  padding-right: 32px;
+}
+
+/* ------------------------------------------------------------------ */
+/* Pricing accordion                                                    */
+/* ------------------------------------------------------------------ */
+
+.price-row {
+  position: relative;
+}
+
+.price-row::before {
+  content: "";
+  position: absolute;
+  left: calc(-1 * var(--gutter));
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: var(--signal);
+  transform: scaleY(0);
+  transform-origin: top center;
+  transition: transform 0.35s var(--ease-out);
+}
+
+.price-row[data-open="true"]::before {
+  transform: scaleY(1);
+}
+
+.price-panel {
+  overflow: hidden;
+}
+
+html:not(.js) .price-panel {
+  height: auto !important;
+}
+
+/* Skip link */
+.skip-link {
+  position: fixed;
+  top: 8px;
+  left: 8px;
+  z-index: 100;
+  padding: 8px 12px;
+  background: var(--ink);
+  color: var(--paper);
+  transform: translateY(-200%);
+}
+
+.skip-link:focus-visible {
+  transform: translateY(0);
 }
