@@ -138,8 +138,10 @@ export function rewriteFrame(target: string, progress: number, seed = Math.rando
       out += ch;
       continue;
     }
-    const idx = Math.floor(((seed * 9973 + i * 31 + p * 997) % 1) * REWRITE_CHARSET.length);
-    out += REWRITE_CHARSET[Math.abs(idx) % REWRITE_CHARSET.length];
+    // Fractional hash: the golden-ratio step keeps neighbouring characters distinct.
+    const h = (seed * 9973.13 + i * 0.6180339887 + p * 997.7) % 1;
+    const idx = Math.floor(Math.abs(h) * REWRITE_CHARSET.length);
+    out += REWRITE_CHARSET[idx % REWRITE_CHARSET.length];
   }
   return out;
 }

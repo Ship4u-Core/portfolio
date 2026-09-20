@@ -8,8 +8,12 @@ import { EASE_OUT, isReducedMotion, STAGGER } from "@/lib/motion";
 interface DigitRollProps {
   value: string;
   className?: string;
-  /** Roll when scrolled into view (default) or under parent control. */
-  trigger?: "scroll" | "manual";
+  /**
+   * "scroll": roll when 85% into view. "manual": roll when `play` is true.
+   * "event": roll when a `digitroll:play` event is dispatched on the element
+   * (used inside pinned scenes that own the timing).
+   */
+  trigger?: "scroll" | "manual" | "event";
   /** For manual mode: 0..1 progress, or true to play. */
   play?: boolean;
   duration?: number;
@@ -38,9 +42,13 @@ export function DigitRoll({
     const strips = Array.from(root.querySelectorAll<HTMLElement>("[data-strip]"));
     if (strips.length === 0) return;
 
+    let roll = () => {};
     const ctx = gsap.context(() => {
-      gsap.set(strips, { yPercent: 0 });
-      const roll = () => {
+      // The server renders the final digit as an inline translate; GSAP must
+      // take over that transform entirely or it adds yPercent on top of it.
+      gsap.set(strips, { clearProps: "transform" });
+      gsap.set(strips, { y: 0, yPercent: 0 });
+      roll = () => {
         if (played.current) return;
         played.current = true;
         gsap.to(strips, {
@@ -56,11 +64,16 @@ export function DigitRoll({
         roll();
       }
     }, root);
-    return () => ctx.revert();
+    const onEvent = () => roll();
+    if (trigger === "event") root.addEventListener("digitroll:play", onEvent);
+    return () => {
+      root.removeEventListener("digitroll:play", onEvent);
+      ctx.revert();
+    };
   }, [value, trigger, play, duration]);
 
   return (
-    <span ref={ref} className={clsx("inline-flex tabular", className)}>
+    <span ref={ref} className={clsx("inline-flex tabular", className)} data-digit-roll>
       <span className="sr-only">{value}</span>
       {Array.from(value).map((ch, i) => {
         if (!DIGITS.includes(ch)) {

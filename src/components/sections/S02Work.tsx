@@ -5,7 +5,9 @@ import { isPlaceholder } from "@/content/site";
 import type { Project } from "@/types/content";
 import { SectionHeader } from "@/components/ui/SectionHeader";
 import { Placeholder } from "@/components/ui/Placeholder";
+import { DigitRoll } from "@/components/ui/DigitRoll";
 import { RegistrationCross } from "@/components/ui/Icons";
+import { WorkScene } from "./WorkScene";
 
 function P({ children, className }: { children: string; className?: string }) {
   return (
@@ -21,28 +23,30 @@ function P({ children, className }: { children: string; className?: string }) {
  */
 export function S02Work() {
   return (
-    <section
-      id="work"
-      aria-labelledby="work-title"
-      className="doc-section"
-      data-section="02"
-    >
-      <div className="section-pad">
-        <SectionHeader code="02" title="SELECTED WORK" id="work" />
+    <WorkScene>
+      <section
+        id="work"
+        aria-labelledby="work-title"
+        className="doc-section"
+        data-section="02"
+      >
+        <div className="section-pad">
+          <SectionHeader code="02" title="SELECTED WORK" id="work" />
 
-        <div className="container-doc mt-16 md:mt-24">
-          <HeroCaseStudy project={heroProject} />
+          <div className="container-doc mt-16 md:mt-24">
+            <HeroCaseStudy project={heroProject} />
 
-          <ul className="hairline-t mt-24 md:mt-32" data-work-rows>
-            {supportingProjects.map((project) => (
-              <li key={project.code} className="hairline-b">
-                <WorkRow project={project} />
-              </li>
-            ))}
-          </ul>
+            <ul className="hairline-t mt-24 md:mt-32" data-work-rows>
+              {supportingProjects.map((project) => (
+                <li key={project.code} className="hairline-b">
+                  <WorkRow project={project} />
+                </li>
+              ))}
+            </ul>
+          </div>
         </div>
-      </div>
-    </section>
+      </section>
+    </WorkScene>
   );
 }
 
@@ -58,10 +62,22 @@ function HeroCaseStudy({ project }: { project: Project }) {
               className="pointer-events-none absolute inset-0 border border-rule"
               data-work-frame-rule
             />
-            <RegistrationCross className="absolute -left-1.5 -top-1.5 text-ink" />
-            <RegistrationCross className="absolute -right-1.5 -top-1.5 text-ink" />
-            <RegistrationCross className="absolute -bottom-1.5 -left-1.5 text-ink" />
-            <RegistrationCross className="absolute -bottom-1.5 -right-1.5 text-ink" />
+            <RegistrationCross
+              className="absolute -left-1.5 -top-1.5 text-ink"
+              data-work-cross
+            />
+            <RegistrationCross
+              className="absolute -right-1.5 -top-1.5 text-ink"
+              data-work-cross
+            />
+            <RegistrationCross
+              className="absolute -bottom-1.5 -left-1.5 text-ink"
+              data-work-cross
+            />
+            <RegistrationCross
+              className="absolute -bottom-1.5 -right-1.5 text-ink"
+              data-work-cross
+            />
             <Image
               src={project.image.src}
               width={project.image.width}
@@ -88,7 +104,10 @@ function HeroCaseStudy({ project }: { project: Project }) {
           </div>
 
           {/* Corner annotations */}
-          <figcaption className="mono mt-3 flex flex-wrap justify-between gap-x-6 gap-y-2" data-work-annotations>
+          <figcaption
+            className="mono mt-3 flex flex-wrap justify-between gap-x-6 gap-y-2"
+            data-work-annotations
+          >
             <span>{project.code}</span>
             <span>
               <P>{project.year}</P>
@@ -103,12 +122,12 @@ function HeroCaseStudy({ project }: { project: Project }) {
         <h3 id="work-hero-name" className="display-l mt-10" data-work-name>
           <P>{project.name}</P>
         </h3>
-        <p className="body mt-4 text-ink-soft">
-          <P>{project.description}</P>
-        </p>
 
         {/* Breakdown */}
-        <div className="mt-14 grid gap-10 md:grid-cols-3" data-work-breakdown>
+        <div className="mt-6 grid gap-10 md:grid-cols-3" data-work-breakdown>
+          <p className="body text-ink-soft md:col-span-3" data-work-desc>
+            <P>{project.description}</P>
+          </p>
           <div>
             <p className="mono">{workLabels.problem}</p>
             <ul className="body mt-4 text-[15px] text-ink-soft">
@@ -144,8 +163,8 @@ function HeroCaseStudy({ project }: { project: Project }) {
         >
           {project.metrics?.map((metric) => (
             <div key={metric.label}>
-              <dd className="price text-ink" data-digit-roll>
-                {metric.display}
+              <dd className="price text-ink">
+                <DigitRoll value={metric.display} trigger="event" />
               </dd>
               <dt className="mono mt-3">
                 <P>{metric.label}</P>

@@ -35,7 +35,28 @@ const s = {
   strokeLinejoin: "miter" as const,
 };
 
-const solid = { ...s, fill: "var(--paper-sunk)" };
+/**
+ * A filled block is two rects: a stroke-free fill (which the scene fades,
+ * since dashes cannot hide a fill) and the drawn outline above it.
+ */
+function Solid({
+  fill = "var(--paper-sunk)",
+  ...rect
+}: {
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+  rx?: number;
+  fill?: string;
+}) {
+  return (
+    <>
+      <rect {...rect} fill={fill} stroke="none" data-fill />
+      <rect {...rect} {...s} />
+    </>
+  );
+}
 
 const mono = {
   fontFamily: "var(--font-geist-mono), ui-monospace, monospace",
@@ -115,28 +136,28 @@ const elements: El[] = [
     from: 1,
     to: 1,
     order: 0.42,
-    children: <rect x={150} y={190} width={500} height={100} {...solid} />,
+    children: <Solid x={150} y={190} width={500} height={100} />,
   },
   {
     id: "block-col-1",
     from: 1,
     to: 1,
     order: 0.55,
-    children: <rect x={150} y={310} width={150} height={80} {...solid} />,
+    children: <Solid x={150} y={310} width={150} height={80} />,
   },
   {
     id: "block-col-2",
     from: 1,
     to: 1,
     order: 0.6,
-    children: <rect x={325} y={310} width={150} height={80} {...solid} />,
+    children: <Solid x={325} y={310} width={150} height={80} />,
   },
   {
     id: "block-col-3",
     from: 1,
     to: 1,
     order: 0.65,
-    children: <rect x={500} y={310} width={150} height={80} {...solid} />,
+    children: <Solid x={500} y={310} width={150} height={80} />,
   },
   {
     id: "text-lines",
@@ -162,7 +183,10 @@ const elements: El[] = [
         <path d={`M${FRAME.x} 580H${FRAME.x + FRAME.w}`} {...s} />
         <path d={`M${FRAME.x} 572V588`} {...s} />
         <path d={`M${FRAME.x + FRAME.w} 572V588`} {...s} />
-        <path d={`M${FRAME.x + 10} 575L${FRAME.x} 580L${FRAME.x + 10} 585`} {...s} />
+        <path
+          d={`M${FRAME.x + 10} 575L${FRAME.x} 580L${FRAME.x + 10} 585`}
+          {...s}
+        />
         <path
           d={`M${FRAME.x + FRAME.w - 10} 575L${FRAME.x + FRAME.w} 580L${FRAME.x + FRAME.w - 10} 585`}
           {...s}
@@ -203,9 +227,15 @@ const elements: El[] = [
     order: 0.2,
     children: (
       <>
-        <rect x={262} y={186} width={388} height={24} {...solid} />
-        <path d="M262 240H650M262 270H650M262 300H650M262 330H650M262 360H650M262 390H650" {...s} />
-        <path d="M262 186V390M650 186V390M360 186V390M460 186V390M560 186V390" {...s} />
+        <Solid x={262} y={186} width={388} height={24} />
+        <path
+          d="M262 240H650M262 270H650M262 300H650M262 330H650M262 360H650M262 390H650"
+          {...s}
+        />
+        <path
+          d="M262 186V390M650 186V390M360 186V390M460 186V390M560 186V390"
+          {...s}
+        />
       </>
     ),
   },
@@ -216,7 +246,7 @@ const elements: El[] = [
     order: 0.5,
     children: (
       <>
-        <rect x={330} y={250} width={260} height={160} {...s} fill="var(--paper)" />
+        <Solid x={330} y={250} width={260} height={160} fill="var(--paper)" />
         <rect x={570} y={258} width={10} height={10} {...s} />
         <path d="M350 290H520M350 315H480M350 380H420" {...s} />
       </>
@@ -230,7 +260,13 @@ const elements: El[] = [
     order: 0.65,
     children: (
       <>
-        <ellipse cx={DB.cx} cy={DB.cy - DB.h / 2} rx={DB.rx} ry={DB.ry} {...s} />
+        <ellipse
+          cx={DB.cx}
+          cy={DB.cy - DB.h / 2}
+          rx={DB.rx}
+          ry={DB.ry}
+          {...s}
+        />
         <path
           d={`M${DB.cx - DB.rx} ${DB.cy - DB.h / 2}V${DB.cy + DB.h / 2}M${DB.cx + DB.rx} ${DB.cy - DB.h / 2}V${DB.cy + DB.h / 2}`}
           {...s}
@@ -249,7 +285,12 @@ const elements: El[] = [
     text: true,
     order: 0.72,
     children: (
-      <text x={DB.cx} y={DB.cy + DB.h / 2 + 26} textAnchor="middle" style={mono}>
+      <text
+        x={DB.cx}
+        y={DB.cy + DB.h / 2 + 26}
+        textAnchor="middle"
+        style={mono}
+      >
         DATABASE
       </text>
     ),
@@ -268,7 +309,12 @@ const elements: El[] = [
     text: true,
     order: 0.82,
     children: (
-      <text x={API.x + API.w / 2} y={API.y + API.h + 26} textAnchor="middle" style={mono}>
+      <text
+        x={API.x + API.w / 2}
+        y={API.y + API.h + 26}
+        textAnchor="middle"
+        style={mono}
+      >
         API
       </text>
     ),
@@ -281,8 +327,14 @@ const elements: El[] = [
     order: 0.85,
     children: (
       <>
-        <path d={`M${DB.cx} ${FRAME.y + FRAME.h}V${DB.cy - DB.h / 2 - DB.ry}`} {...s} />
-        <path d={`M${API.x + API.w / 2} ${FRAME.y + FRAME.h}V${API.y}`} {...s} />
+        <path
+          d={`M${DB.cx} ${FRAME.y + FRAME.h}V${DB.cy - DB.h / 2 - DB.ry}`}
+          {...s}
+        />
+        <path
+          d={`M${API.x + API.w / 2} ${FRAME.y + FRAME.h}V${API.y}`}
+          {...s}
+        />
         <path d={`M${DB.cx + DB.rx} ${DB.cy}H${API.x}`} {...s} />
       </>
     ),
@@ -304,7 +356,14 @@ const elements: El[] = [
           rx={PHONE.r}
           {...s}
         />
-        <rect x={PHONE.x + 80} y={PHONE.y + 12} width={80} height={12} rx={6} {...s} />
+        <rect
+          x={PHONE.x + 80}
+          y={PHONE.y + 12}
+          width={80}
+          height={12}
+          rx={6}
+          {...s}
+        />
       </>
     ),
   },
@@ -315,10 +374,10 @@ const elements: El[] = [
     order: 0.25,
     children: (
       <>
-        <rect x={305} y={170} width={190} height={70} {...solid} />
-        <rect x={305} y={255} width={190} height={70} {...solid} />
-        <rect x={305} y={340} width={190} height={70} {...solid} />
-        <rect x={305} y={425} width={190} height={70} {...solid} />
+        <Solid x={305} y={170} width={190} height={70} />
+        <Solid x={305} y={255} width={190} height={70} />
+        <Solid x={305} y={340} width={190} height={70} />
+        <Solid x={305} y={425} width={190} height={70} />
       </>
     ),
   },
@@ -383,7 +442,10 @@ const elements: El[] = [
     order: 0.05,
     children: (
       <>
-        <path d={`M${PHONE.x + PHONE.w} 150H${nodeAt("retrieve").x - NODE_W / 2}`} {...s} />
+        <path
+          d={`M${PHONE.x + PHONE.w} 150H${nodeAt("retrieve").x - NODE_W / 2}`}
+          {...s}
+        />
         <path d={edge("retrieve", "rank")} {...s} />
         <path d={edge("rank", "prompt")} {...s} />
         <path d={edge("prompt", "tool")} {...s} />
@@ -391,7 +453,10 @@ const elements: El[] = [
         <path d={edge("eval", "guard")} {...s} />
         <path d={edge("guard", "respond")} {...s} />
         <path d={edge("respond", "prompt", 640)} {...s} />
-        <path d={`M${nodeAt("respond").x - NODE_W / 2} ${nodeAt("respond").y}H${PHONE.x + PHONE.w}`} {...s} />
+        <path
+          d={`M${nodeAt("respond").x - NODE_W / 2} ${nodeAt("respond").y}H${PHONE.x + PHONE.w}`}
+          {...s}
+        />
       </>
     ),
   },
@@ -402,14 +467,12 @@ const elements: El[] = [
     signalAt: n.id === "eval" ? 4 : undefined,
     order: 0.2 + i * 0.1,
     children: (
-      <rect
+      <Solid
         x={n.x - NODE_W / 2}
         y={n.y - NODE_H / 2}
         width={NODE_W}
         height={NODE_H}
-        {...s}
         fill="var(--paper)"
-        data-node={n.id}
       />
     ),
   })),
@@ -420,14 +483,24 @@ const elements: El[] = [
     text: true,
     order: 0.28 + i * 0.1,
     children: (
-      <text x={n.x} y={n.y + 4} textAnchor="middle" style={{ ...mono, fontSize: 10 }}>
+      <text
+        x={n.x}
+        y={n.y + 4}
+        textAnchor="middle"
+        style={{ ...mono, fontSize: 10 }}
+      >
         {n.label}
       </text>
     ),
   })),
 ];
 
-export const STAGE_TITLES = ["WEBSITES", "WEB APPLICATIONS", "MOBILE", "AI"] as const;
+export const STAGE_TITLES = [
+  "WEBSITES",
+  "WEB APPLICATIONS",
+  "MOBILE",
+  "AI",
+] as const;
 
 interface BuildSystemSVGProps {
   /** Which stage's final composition to show statically. */

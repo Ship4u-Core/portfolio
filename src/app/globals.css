@@ -317,7 +317,8 @@
 .doc-section[data-tone="ink"] {
   --rule: var(--rule-on-ink);
   --mono-color: color-mix(in srgb, var(--paper-on-ink) 55%, var(--ink-flood));
-  background: var(--ink-flood);
+  /* The ink itself is the flood layer, so it can wipe in. */
+  background: transparent;
   color: var(--paper-on-ink);
   border-top-color: transparent;
 }
@@ -337,7 +338,8 @@
 }
 
 .ship-display {
-  font-size: var(--type-display-xl);
+  /* Display XL, capped so LET'S SHIP IT. stays on one line inside the gutters. */
+  font-size: min(var(--type-display-xl), 9.2vw, 8.75rem);
 }
 
 @media (max-width: 767px) {
@@ -354,30 +356,7 @@
 /* 01 Build system: static and reduced-motion renders show stage four.  */
 /* ------------------------------------------------------------------ */
 
-html:not(.js) [data-build-system][data-animated] g[data-el]:not([data-to="4"]),
-html.reduce [data-build-system][data-animated] g[data-el]:not([data-to="4"]) {
-  display: none;
-}
-
-html:not(.js) [data-build-system][data-animated] g[data-signal-at="4"] [stroke],
-html.reduce [data-build-system][data-animated] g[data-signal-at="4"] [stroke] {
-  stroke: var(--signal);
-}
-
-html.js:not(.reduce) [data-build-system][data-animated] g[data-el] {
-  visibility: hidden;
-}
-
-/* Copy blocks: stacked by default; the pinned scene positions them. */
-html.js:not(.reduce) [data-cap-copy][data-pinned] {
-  position: relative;
-}
-
-html.js:not(.reduce) [data-cap-copy][data-pinned] > article {
-  position: absolute;
-  inset: 0 0 auto 0;
-  margin: 0;
-}
+/* See the "01 Capabilities: the build system" block further down. */
 
 /* ------------------------------------------------------------------ */
 /* 04 Process: vertical list is the base layout. Horizontal track is    */
@@ -431,18 +410,34 @@ html.js:not(.reduce) .process-stage[data-passed] .process-index {
 }
 
 @media (min-width: 768px) {
-  html.js:not(.reduce) .process-track[data-horizontal] {
-    padding-left: 0;
+  /* The pin block becomes exactly one viewport tall. */
+  html.js:not(.reduce) .process-pin[data-horizontal] {
     height: 100svh;
+    padding-block: 0;
+    padding-top: calc(var(--rail-height) + 48px);
+    display: flex;
+    flex-direction: column;
+    overflow: clip;
+  }
+
+  html.js:not(.reduce) .process-pin[data-horizontal] .process-body {
+    flex: 1;
     display: flex;
     align-items: center;
-    overflow: hidden;
+    margin-top: 0;
+    min-height: 0;
+  }
+
+  html.js:not(.reduce) .process-track[data-horizontal] {
+    padding-left: 0;
+    padding-top: 56px;
+    width: 100%;
   }
 
   html.js:not(.reduce) .process-track[data-horizontal] .process-line {
     left: 0;
     right: 0;
-    top: 50%;
+    top: 0;
     bottom: auto;
     height: 1px;
     width: auto;
@@ -451,7 +446,7 @@ html.js:not(.reduce) .process-stage[data-passed] .process-index {
   html.js:not(.reduce) .process-track[data-horizontal] .process-dot {
     left: 0;
     bottom: auto;
-    top: calc(50% - 4.5px);
+    top: -4.5px;
   }
 
   html.js:not(.reduce) .process-track[data-horizontal] .process-stages {
@@ -462,20 +457,232 @@ html.js:not(.reduce) .process-stage[data-passed] .process-index {
   }
 
   html.js:not(.reduce) .process-track[data-horizontal] .process-stage {
-    width: 420px;
+    width: 400px;
     padding-right: 72px;
-    padding-top: 40px;
+    padding-top: 8px;
   }
 
   html.js:not(.reduce) .process-track[data-horizontal] .process-stage::before {
     content: "";
     position: absolute;
     left: 0;
-    top: -28px;
+    top: -56px;
     width: 1px;
-    height: 16px;
+    height: 24px;
     background: var(--rule);
   }
+}
+
+/* ------------------------------------------------------------------ */
+/* 01 Capabilities: the build system                                     */
+/* ------------------------------------------------------------------ */
+
+/* Static desktop (JS off or reduced motion): the continuous drawing shows
+   its final composition; elements that left before stage 4 are not shown
+   and the stage-4 signal element is stroked in the accent. */
+html:not(.js) [data-build-system][data-animated] g[data-el]:not([data-to="4"]),
+html.reduce [data-build-system][data-animated] g[data-el]:not([data-to="4"]) {
+  display: none;
+}
+
+html:not(.js) [data-build-system][data-animated] g[data-signal-at="4"] [stroke],
+html.reduce [data-build-system][data-animated] g[data-signal-at="4"] [stroke] {
+  stroke: var(--signal);
+}
+
+@media (min-width: 768px) {
+  /* Static desktop: the drawing stays alongside the four stacked copies. */
+  html:not(.js) [data-cap-figure],
+  html.reduce [data-cap-figure] {
+    position: sticky;
+    top: calc(var(--rail-height) + 48px);
+    align-self: start;
+  }
+}
+
+/* With motion, every group is hidden until its dashes are prepared. */
+html.js:not(.reduce) [data-build-system][data-animated] g[data-el] {
+  opacity: 0;
+}
+
+/* The EVAL node pulses once every three seconds while it is the signal. */
+@keyframes cap-pulse {
+  0%,
+  86%,
+  100% {
+    opacity: 1;
+  }
+  93% {
+    opacity: 0.35;
+  }
+}
+
+html.js:not(.reduce) [data-build-system] g[data-el="node-eval"].signal-stroke {
+  animation: cap-pulse 3s linear infinite;
+}
+
+@media (min-width: 768px) {
+  /* Pinned layout: one viewport tall, drawing left, one copy block right. */
+  html.js:not(.reduce) [data-cap-scene][data-pinned] {
+    display: grid;
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    column-gap: 24px;
+    align-items: center;
+    height: 100svh;
+    padding-top: var(--rail-height);
+    box-sizing: border-box;
+  }
+
+  html.js:not(.reduce) [data-cap-scene][data-pinned] [data-cap-figure] {
+    grid-column: 1 / span 6;
+    display: flex;
+    justify-content: center;
+  }
+
+  html.js:not(.reduce) [data-cap-scene][data-pinned] [data-cap-figure] svg {
+    width: min(100%, calc(100svh - var(--rail-height) - 120px));
+    height: auto;
+  }
+
+  html.js:not(.reduce) [data-cap-scene][data-pinned] [data-cap-copy] {
+    grid-column: 8 / span 5;
+    position: relative;
+    align-self: stretch;
+  }
+
+  html.js:not(.reduce) [data-cap-scene][data-pinned] [data-cap-stage] {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 50%;
+    translate: 0 -50%;
+    margin: 0;
+    will-change: clip-path, transform;
+  }
+}
+
+/* ------------------------------------------------------------------ */
+/* 02 Selected work: pinned zoom (desktop, motion) + row hover           */
+/* ------------------------------------------------------------------ */
+
+@media (min-width: 768px) {
+  /* Pinned mode: the stage is one viewport tall, every piece absolute.
+     Set by WorkScene only on desktop with motion; the static document
+     never sees these rules. */
+  html.js:not(.reduce) [data-work-stage][data-pinned] {
+    position: relative;
+    height: 100svh;
+    overflow: clip;
+  }
+
+  html.js:not(.reduce) [data-work-stage][data-pinned] [data-work-figure] {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0;
+  }
+
+  html.js:not(.reduce) [data-work-stage][data-pinned] [data-work-frame] {
+    width: 100%;
+    will-change: transform;
+  }
+
+  html.js:not(.reduce) [data-work-stage][data-pinned] [data-work-annotations] {
+    position: absolute;
+    left: 0;
+    margin: 0;
+    width: 60vw;
+    padding-right: var(--gutter);
+    justify-content: flex-start;
+    gap: 40px;
+  }
+
+  html.js:not(.reduce) [data-work-stage][data-pinned] [data-work-name] {
+    position: absolute;
+    left: 0;
+    bottom: 22%;
+    margin: 0;
+    max-width: 54%;
+    font-size: clamp(2rem, 4.2vw, 3.75rem);
+    line-height: 0.98;
+    overflow-wrap: anywhere;
+    color: var(--ink);
+    will-change: clip-path, transform;
+  }
+
+  html.js:not(.reduce) [data-work-stage][data-pinned] [data-work-breakdown],
+  html.js:not(.reduce) [data-work-stage][data-pinned] [data-work-metrics] {
+    position: absolute;
+    top: 50%;
+    translate: 0 -50%;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 28px;
+    will-change: clip-path;
+  }
+
+  html.js:not(.reduce) [data-work-stage][data-pinned] [data-work-desc] {
+    font-size: 15px;
+  }
+
+  html.js:not(.reduce) [data-work-stage][data-pinned] [data-work-metrics] > div {
+    display: flex;
+    flex-direction: column;
+  }
+}
+
+/* Supporting rows: sunk fill and cursor-following preview on hover. */
+[data-work-row][data-interactive] {
+  transition: background-color 0.4s var(--ease-out);
+}
+
+[data-work-row][data-interactive]:hover,
+[data-work-row][data-interactive]:focus-visible {
+  background-color: var(--paper-sunk);
+}
+
+[data-work-preview] {
+  opacity: 0;
+  transition: opacity 0.4s var(--ease-out);
+}
+
+[data-work-row][data-interactive]:hover [data-work-preview],
+[data-work-row][data-interactive]:focus-visible [data-work-preview] {
+  opacity: 1;
+}
+
+/* ------------------------------------------------------------------ */
+/* 05 Stack schematic: draw-in gate and hover states                     */
+/* ------------------------------------------------------------------ */
+
+/* With motion, strokes and labels stay hidden until dashes are prepared. */
+html.js:not(.reduce) [data-stack-schematic]:not([data-ready]) :is(rect[data-node-box], path[data-edge], text) {
+  visibility: hidden;
+}
+
+[data-stack-schematic] g[data-stack-node] {
+  outline: none;
+  transition: opacity 0.2s var(--ease-out);
+}
+
+[data-stack-schematic] rect[data-node-box],
+[data-stack-schematic] path[data-edge] {
+  transition: stroke 0.2s var(--ease-out);
+}
+
+[data-stack-schematic].is-hover g[data-stack-node]:not(.is-active):not(.is-linked) {
+  opacity: 0.35;
+}
+
+[data-stack-schematic] g[data-stack-node].is-active rect[data-node-box],
+[data-stack-schematic] g[data-stack-node]:focus-visible rect[data-node-box],
+[data-stack-schematic] path[data-edge].is-active {
+  stroke: var(--signal);
 }
 
 /* ------------------------------------------------------------------ */
@@ -677,6 +884,11 @@ html.lenis body {
 /* The wordmark's 4 flips to the accent at the end of the hero load. */
 html.js:not(.reduce) [data-wordmark-four] {
   color: inherit;
+  transition: color 0.35s var(--ease-out);
+}
+
+html.js:not(.reduce) [data-wordmark-four][data-on] {
+  color: var(--signal);
 }
 
 /* The manifest rail is JavaScript-driven; hide its dead controls without it. */
@@ -799,8 +1011,13 @@ select.field-input {
   overflow: hidden;
 }
 
-html:not(.js) .price-panel {
-  height: auto !important;
+/* Resting states live in CSS; GSAP only owns the transition between them. */
+html.js .price-panel[data-open="false"] {
+  height: 0;
+}
+
+html.js .price-panel[data-open="true"] {
+  height: auto;
 }
 
 /* Skip link */

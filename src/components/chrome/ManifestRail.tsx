@@ -1,9 +1,10 @@
 "use client";
 
 import clsx from "clsx";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
 import { manifest } from "@/content/sections";
 import { scrollToSection } from "@/lib/gsap";
+import { drawIn, isReducedMotion, prepareDraw } from "@/lib/motion";
 import { useSectionState } from "@/lib/sectionStore";
 import { Cross, Tick } from "@/components/ui/Icons";
 
@@ -49,10 +50,26 @@ export function ManifestRail() {
     return { ...s, isActive, done };
   });
 
+  // Newly mounted ticks draw themselves: 0.2s each, 0.05s stagger top to
+  // bottom. On the closing collapse every remaining row ticks in sequence.
+  const navRef = useRef<HTMLElement>(null);
+  useLayoutEffect(() => {
+    const nav = navRef.current;
+    if (!nav || isReducedMotion()) return;
+    const fresh = Array.from(
+      nav.querySelectorAll<SVGSVGElement>("[data-manifest-tick]:not([data-drawn])"),
+    );
+    if (fresh.length === 0) return;
+    fresh.forEach((svg) => svg.setAttribute("data-drawn", ""));
+    const paths = fresh.flatMap((svg) => prepareDraw(svg));
+    drawIn(paths, { duration: 0.2, stagger: 0.05, ease: "power4.inOut" });
+  });
+
   return (
     <>
       {/* Desktop rail */}
       <nav
+        ref={navRef}
         aria-label="Sections"
         className={clsx(
           "fixed right-0 top-1/2 z-40 hidden -translate-y-1/2 border-l py-3 pl-5 pr-(--gutter) lg:block",

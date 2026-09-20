@@ -19,27 +19,38 @@ export function ProgressRail() {
 
   const current = sections.find((s) => s.code === state.active) ?? sections[0];
   const chip = state.shipped ? "SHIPPED" : "BUILDING";
+  const shippedRef = useRef(false);
+  const progressRef = useRef(0);
 
   useLayoutEffect(() => {
     const fill = fillRef.current;
     if (!fill) return;
     gsap.set(fill, { scaleX: 0, transformOrigin: "left center" });
+    const follow = (self: ScrollTrigger) => {
+      progressRef.current = self.progress;
+      // During the closing collapse the fill is held at 100 percent.
+      if (!shippedRef.current) gsap.set(fill, { scaleX: self.progress });
+    };
     const trigger = ScrollTrigger.create({
       trigger: document.documentElement,
       start: 0,
       end: () => ScrollTrigger.maxScroll(window),
-      onUpdate: (self) => gsap.set(fill, { scaleX: self.progress }),
-      onRefresh: (self) => gsap.set(fill, { scaleX: self.progress }),
+      onUpdate: follow,
+      onRefresh: follow,
     });
     return () => trigger.kill();
   }, []);
 
+  // Closing collapse: fill runs to 100 percent, then the chip underline draws.
   useLayoutEffect(() => {
     const underline = underlineRef.current;
-    if (!underline) return;
+    const fill = fillRef.current;
+    if (!underline || !fill) return;
     const reduced = document.documentElement.classList.contains("reduce");
-    gsap.killTweensOf(underline);
+    shippedRef.current = state.shipped;
+    gsap.killTweensOf([underline, fill]);
     if (state.shipped) {
+      gsap.to(fill, { scaleX: 1, duration: reduced ? 0 : 0.6, ease: "expo.out" });
       gsap.fromTo(
         underline,
         { scaleX: 0, transformOrigin: "left center" },
@@ -47,6 +58,7 @@ export function ProgressRail() {
       );
     } else {
       gsap.set(underline, { scaleX: 0 });
+      gsap.set(fill, { scaleX: progressRef.current });
     }
   }, [state.shipped]);
 

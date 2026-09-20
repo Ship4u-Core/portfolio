@@ -36,9 +36,9 @@ const routes: Record<string, string> = {
   "react-nextjs": "M300 60H270",
   "typescript-react": "M480 60H450",
   "tailwind-typescript": "M660 60H630",
-  "nextjs-nodejs": "M175 80V160",
+  "nextjs-nodejs": "M205 80V160",
   "typescript-trpc": "M555 80V160",
-  "nodejs-postgres": "M175 200V280",
+  "nodejs-postgres": "M205 200V280",
   "fastapi-openai": "M395 200V250H465V350H395V400",
   "redis-postgres": "M300 300H270",
   "s3-redis": "M480 300H450",
@@ -116,6 +116,9 @@ export function StackSchematic({ className }: StackSchematicProps) {
           key={n.id}
           data-stack-node={n.id}
           data-band={n.band}
+          tabIndex={0}
+          role="img"
+          aria-label={`${n.name}. ${n.rationale}`}
           style={{ cursor: "default" }}
         >
           <rect
