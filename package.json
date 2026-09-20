@@ -4,9 +4,11 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
+    "prebuild": "node scripts/placeholders.mjs --write",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "placeholders": "node scripts/placeholders.mjs --write"
   },
   "dependencies": {
     "@gsap/react": "^2.1.2",

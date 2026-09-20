@@ -3,7 +3,8 @@ import { GeistSans } from "geist/font/sans";
 import { GeistMono } from "geist/font/mono";
 import { Instrument_Serif } from "next/font/google";
 import "./globals.css";
-import { site } from "@/content/site";
+import { isPlaceholder, site } from "@/content/site";
+import { founders } from "@/content/studio";
 import { Grain } from "@/components/chrome/Grain";
 import { GridOverlay } from "@/components/chrome/GridOverlay";
 import { ScrollProvider } from "@/components/chrome/ScrollProvider";
@@ -55,6 +56,54 @@ export const viewport: Viewport = {
  */
 const gateScript = `(function(d){var c=d.documentElement.classList;c.add("js");if(window.matchMedia&&window.matchMedia("(prefers-reduced-motion: reduce)").matches){c.add("reduce")}})(document);`;
 
+/**
+ * Organization + ProfessionalService structured data (spec 10.1). Placeholder
+ * tokens are left out rather than published; the script fills in as content
+ * is replaced.
+ */
+function jsonLd() {
+  const sameAs = site.profiles.map((p) => p.href).filter((h) => !isPlaceholder(h));
+  const founderList = founders
+    .filter((f) => !isPlaceholder(f.name))
+    .map((f) => ({ "@type": "Person", name: f.name, jobTitle: f.role }));
+  const base = {
+    name: "Ship4u",
+    url: site.url,
+    description: site.description,
+    areaServed: "IN",
+    ...(isPlaceholder(site.email) ? {} : { email: site.email }),
+    ...(isPlaceholder(site.legalName) ? {} : { legalName: site.legalName }),
+    ...(sameAs.length ? { sameAs } : {}),
+  };
+  return {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "Organization",
+        "@id": `${site.url}/#organization`,
+        ...base,
+        ...(founderList.length ? { founder: founderList } : {}),
+        logo: `${site.url}/icon.svg`,
+      },
+      {
+        "@type": "ProfessionalService",
+        "@id": `${site.url}/#service`,
+        ...base,
+        priceRange: "₹₹",
+        image: `${site.url}/opengraph-image`,
+        parentOrganization: { "@id": `${site.url}/#organization` },
+        knowsAbout: [
+          "Web development",
+          "Web applications",
+          "Mobile applications",
+          "AI applications",
+          "Deployment and cloud",
+        ],
+      },
+    ],
+  };
+}
+
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html
@@ -64,6 +113,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     >
       <head>
         <script dangerouslySetInnerHTML={{ __html: gateScript }} />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd()).replace(/</g, "\\u003c") }}
+        />
       </head>
       <body>
         <a href="#main" className="skip-link mono text-paper">

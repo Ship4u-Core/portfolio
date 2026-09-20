@@ -1,36 +1,119 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Ship4u
 
-## Getting Started
+Marketing site for Ship4u, a two-person development studio. One page, eight sections, built as a technical document that assembles itself as you read it.
 
-First, run the development server:
+Next.js 16 (App Router, Turbopack), TypeScript, Tailwind CSS v4, GSAP with ScrollTrigger, Lenis, three.js for one WebGL interlude. Fonts: Geist Sans, Geist Mono, Instrument Serif.
+
+The full specification the site was built from is `prompt.md`.
+
+## Local setup
+
+Requirements: Node 20 or later, npm 10 or later.
 
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+The site runs at `http://localhost:3000`. Press `G` in development to toggle the 12-column grid overlay.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Other scripts:
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+| Script | What it does |
+|---|---|
+| `npm run build` | Runs the placeholder audit, then `next build` |
+| `npm run start` | Serves the production build |
+| `npm run lint` | ESLint |
+| `npm run placeholders` | Prints every unreplaced placeholder and regenerates `PLACEHOLDERS.md` |
 
-## Learn More
+## Where content lives
 
-To learn more about Next.js, take a look at the following resources:
+Every word on the site is in `src/content/`, typed by `src/types/content.ts`. Components read from these files and contain no copy of their own.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+| File | Contents |
+|---|---|
+| `site.ts` | Name, legal name, location, email, profiles, page title and description, footer colophon, canonical URL |
+| `sections.ts` | Section codes and titles, hero copy, interlude line, ship section copy, form labels, options, validation messages |
+| `services.ts` | The four capability stages and the two support-band rows |
+| `work.ts` | The hero case study and two supporting projects |
+| `process.ts` | The seven process stages |
+| `stack.ts` | Five stack bands, eighteen nodes with rationale, and the schematic connections |
+| `pricing.ts` | Six pricing rows with amounts, included items and timelines |
+| `studio.ts` | Studio paragraph, two founders, availability |
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Edit these files and the site updates. Do not put copy in components.
 
-## Deploy on Vercel
+## Replacing placeholders
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+Provisional content is marked two ways: a `[[TOKEN]]` string, and a `__placeholder: true` flag on the containing entry. In development every placeholder renders with a dashed outline and a `PLACEHOLDER` tag; in production it renders as plain text.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+`PLACEHOLDERS.md` lists every token, the file and line it lives in, and what real content belongs there. It is regenerated on every build and by `npm run placeholders`. The build warns about remaining placeholders but never fails on them, so a staging deploy is always possible.
+
+To replace one:
+
+1. Open the file named in `PLACEHOLDERS.md` and replace the `[[TOKEN]]` string.
+2. When every field in an entry is real, remove its `__placeholder: true` flag.
+3. Run `npm run placeholders` and confirm the list is shorter.
+
+Some notes that go beyond string tokens:
+
+- Work images in `public/work/` are generated placeholders. Replace with real 1600 x 1000 assets and update the `image` fields in `work.ts`.
+- The hero case study metrics use deliberately unreal values (`—%`, `0.0s`, `[metric]`). Replace only with measured figures; a plausible-looking number will end up in production.
+- Supporting projects have `href: null`, which renders them as plain rows with no link and no hover state. Set a URL only when a case study page exists.
+- Profile URLs and the studio email are omitted from the JSON-LD until they are real.
+
+## Wiring the form transport
+
+The enquiry form posts to `POST /api/enquiry` (`src/app/api/enquiry/route.ts`). The route validates server-side, returns `200 { ok: true }` and logs the payload to the server console. Nothing is delivered anywhere yet, and the route logs a warning on every submission saying so.
+
+The place to wire a transport is marked in the route:
+
+```ts
+// TODO(ship4u): wire a transport. Options, in order of effort:
+//   1. Resend  — `await resend.emails.send({...})`, add RESEND_API_KEY
+//   2. Formspree/Web3Forms — POST-forward, no backend key needed
+//   3. Supabase/Postgres table — if you want a CRM later
+// Until one is wired, enquiries are logged only and WILL BE LOST.
+```
+
+Replace the body of `deliver()` with the transport call and remove the warning once submissions are confirmed to arrive. The route accepts both JSON (the form with JavaScript) and form-encoded bodies (the same form with JavaScript disabled); keep both paths working.
+
+## Environment variables
+
+| Variable | Purpose | Default |
+|---|---|---|
+| `NEXT_PUBLIC_SITE_URL` | Canonical URL. Drives the sitemap, robots, Open Graph URL and JSON-LD. | `http://localhost:3000` |
+
+Set it to the production origin (for example `https://ship4u.dev`) before deploying. Any transport keys (for example `RESEND_API_KEY`) are added when the form transport is wired.
+
+## Accessibility and motion
+
+- The document is complete and legible with JavaScript disabled. An inline head script adds `js` to `<html>` so that pre-animation states only apply when GSAP will animate them.
+- `prefers-reduced-motion: reduce` disables Lenis, every scrub and every pin. Sections render in their final state; the only transitions left are colour and opacity at 200 ms or less.
+- Below 768px nothing is pinned. The process track is vertical, the capabilities drawing is four static illustrations, the stack schematic is five expandable lists, and three.js is never loaded.
+- three.js is loaded with `next/dynamic` only when the interlude is within 300px of the viewport on a desktop that allows motion and has WebGL. It is not in the initial bundle.
+
+## Notes on the toolchain
+
+- Tailwind CSS v4 is configured entirely in `src/app/globals.css` through `@theme inline`; there is no `tailwind.config.ts`. The specification's reference to a Tailwind config in section 4.3 predates v4.
+- `@gsap/react` is included for `useGSAP`. It is the only dependency beyond the specification's list.
+- All GSAP animation is scoped to a component subtree and torn down on unmount. Only `transform`, `opacity`, `clip-path` and SVG dash values are animated.
+
+## Project layout
+
+```
+src/
+  app/            layout, page, globals.css, api/enquiry, opengraph-image, sitemap, robots, icon
+  components/
+    chrome/       ProgressRail, ManifestRail, Cursor, Grain, GridOverlay, ScrollProvider
+    sections/     S00Index .. S08Ship and their client-side scene wrappers
+    scenes/       BuildSystemSVG, StackSchematic, ProcessGlyphs, WireStatic, WireObject, WireMount
+    ui/           SectionHeader, MonoLabel, Button, Placeholder, StatusChip, MonoRewrite, DigitRoll, RuleRevealText, Icons
+  content/        all copy, typed
+  lib/            gsap.ts, motion.ts, sectionStore.ts, useReducedMotion.ts, enquiry.ts
+  types/          content types
+scripts/
+  placeholders.mjs
+public/
+  work/           placeholder images
+```
